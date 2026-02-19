@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { api, setToken, setRole, setUser } from "@/lib/api";
+import { useTranslation } from "react-i18next";
+import { api, setToken, setRefreshToken, setRole, setUser } from "@/lib/api";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import logo from "@/assets/logo.png";
 import { Lock, User, Eye, EyeOff } from "lucide-react";
 
 export default function AdminLogin() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [form, setForm] = useState({ username: "", password: "" });
   const [loading, setLoading] = useState(false);
@@ -16,12 +19,24 @@ export default function AdminLogin() {
     setLoading(true);
     setError("");
     try {
+      console.log("Attempting admin login with:", form);
       const res: any = await api.adminLogin(form);
-      setToken(res.data?.token || res.token);
-      setRole("ADMIN");
-      setUser(res.data?.admin || res.data);
-      navigate("/admin");
+      console.log("Admin login response:", res);
+      
+      if (res.success && res.tokens?.access_token) {
+        setToken(res.tokens.access_token);
+        if (res.tokens.refresh_token) {
+          setRefreshToken(res.tokens.refresh_token);
+        }
+        setRole("ADMIN");
+        console.log("Admin login successful, navigating to /admin");
+        navigate("/admin");
+      } else {
+        console.error("Invalid response format:", res);
+        throw new Error(res.message || "Invalid response format");
+      }
     } catch (err: any) {
+      console.error("Admin login error:", err);
       setError(err.message || "Неверные данные");
     } finally {
       setLoading(false);
@@ -30,6 +45,11 @@ export default function AdminLogin() {
 
   return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: "hsl(var(--primary))" }}>
+      {/* Language Switcher */}
+      <div className="absolute top-4 right-4 z-10">
+        <LanguageSwitcher />
+      </div>
+
       {/* Background dots */}
       <div className="absolute inset-0 opacity-10 pointer-events-none" style={{
         backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
@@ -40,8 +60,8 @@ export default function AdminLogin() {
         <div className="bg-card rounded-3xl shadow-2xl p-8">
           <div className="flex flex-col items-center mb-8">
             <img src={logo} alt="ASL Medline" className="h-14 w-auto mb-4" />
-            <h1 className="font-display font-bold text-2xl text-primary">Вход для администратора</h1>
-            <p className="text-muted-foreground text-sm mt-1">Введите ваши данные</p>
+            <h1 className="font-display font-bold text-2xl text-primary">{t('admin.dashboard')}</h1>
+            <p className="text-muted-foreground text-sm mt-1">{t('admin.loginPrompt')}</p>
           </div>
 
           <form onSubmit={submit} className="space-y-4">

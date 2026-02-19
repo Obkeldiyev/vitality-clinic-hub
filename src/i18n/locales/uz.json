@@ -1,0 +1,107 @@
+{
+  "nav": {
+    "home": "Bosh sahifa",
+    "about": "Klinika haqida",
+    "branches": "Bo'limlar",
+    "doctors": "Shifokorlar",
+    "services": "Xizmatlar",
+    "news": "Yangiliklar",
+    "gallery": "Galereya",
+    "feedback": "Fikrlar",
+    "contacts": "Aloqa"
+  },
+  "hero": {
+    "badge": "Siz uchun zamonaviy tibbiyot",
+    "title": "ASL MEDLINE",
+    "subtitle": "Klinikasi",
+    "description": "Zamonaviy uskunalar va yuqori malakali mutaxassislar bilan ilg'or klinika. Sizning sog'ligingiz bizning ustuvorligimiz.",
+    "bookAppointment": "Qabulga yozilish",
+    "ourDepartments": "Bizning bo'limlar",
+    "diagnostics": "Diagnostika",
+    "specialists": "Mutaxassislar",
+    "certificates": "Sertifikatlar",
+    "support": "24/7 Qo'llab-quvvatlash"
+  },
+  "stats": {
+    "suffix": "+"
+  },
+  "about": {
+    "label": "Klinika haqida",
+    "title": "ASL Medline — Sog'ligingizda ishonchli hamkor"
+  },
+  "branches": {
+    "label": "Bizning bo'limlar",
+    "title": "Ixtisoslashtirilgan markazlar",
+    "equipment": "uskunalar",
+    "loading": "Bo'limlar yuklanmoqda...",
+    "seeAll": "Barcha bo'limlar"
+  },
+  "doctors": {
+    "label": "Bizning jamoa",
+    "title": "Tajribali mutaxassislar",
+    "awards": "mukofotlar",
+    "loading": "Shifokorlar yuklanmoqda...",
+    "seeAll": "Barcha shifokorlar"
+  },
+  "services": {
+    "label": "Xizmatlar",
+    "title": "Tibbiy xizmatlar va narxlar",
+    "currency": "so'm",
+    "loading": "Xizmatlar yuklanmoqda..."
+  },
+  "news": {
+    "label": "Yangiliklar",
+    "title": "Klinikaning so'nggi yangiliklari",
+    "loading": "Yangiliklar yuklanmoqda...",
+    "seeAll": "Barcha yangiliklar"
+  },
+  "gallery": {
+    "label": "Galereya",
+    "title": "Bizning klinika",
+    "empty": "Galereya hozircha bo'sh",
+    "seeAll": "Barcha rasmlarni ko'rish"
+  },
+  "feedback": {
+    "label": "Fikrlar",
+    "title": "Bemorlarimiz nima deyishadi",
+    "leaveReview": "Fikr qoldirish",
+    "thankYou": "Fikringiz uchun rahmat!",
+    "willBePublished": "U tekshiruvdan so'ng e'lon qilinadi.",
+    "leaveAnother": "Yana qoldirish",
+    "fullName": "Ismingiz",
+    "phone": "Telefon raqami",
+    "email": "Email",
+    "content": "Sizning fikringiz...",
+    "submit": "Fikr yuborish",
+    "sending": "Yuborilmoqda...",
+    "error": "Yuborishda xatolik. Iltimos, qayta urinib ko'ring."
+  },
+  "consultation": {
+    "label": "Konsultatsiya olish",
+    "title": "Qabulga yozilish",
+    "firstName": "Ism",
+    "secondName": "Familiya",
+    "thirdName": "Otasining ismi (ixtiyoriy)",
+    "phone": "Telefon raqami",
+    "problem": "Muammoingizni tasvirlab bering",
+    "attachFiles": "Fayllarni biriktirish (ixtiyoriy)",
+    "addFile": "Fayl qo'shish",
+    "filesSelected": "fayl tanlandi",
+    "submit": "Arizani yuborish",
+    "sending": "Yuborilmoqda...",
+    "thankYou": "Arizangiz uchun rahmat!",
+    "willContact": "Tez orada siz bilan bog'lanamiz.",
+    "bookAnother": "Yana yozilish",
+    "error": "Yuborishda xatolik. Iltimos, qayta urinib ko'ring."
+  },
+  "contacts": {
+    "label": "Biz bilan bog'lanish",
+    "title": "Aloqa ma'lumotlari",
+    "loading": "Kontaktlar yuklanmoqda..."
+  },
+  "footer": {
+    "rights": "Barcha huquqlar himoyalangan.",
+    "admin": "Administrator",
+    "reception": "Qabulxona"
+  }
+}

@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { api, MEDIA_BASE, getRole } from "@/lib/api";
+import { useTranslation } from "react-i18next";
+import { api, MEDIA_BASE, getMediaUrl, getRole } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import logo from "@/assets/logo.png";
 import {
   LayoutDashboard, Building2, Stethoscope, Newspaper, Image as ImageIcon,
@@ -10,20 +12,22 @@ import {
 } from "lucide-react";
 
 // ── Sidebar ────────────────────────────────────────────────────────────
-const SECTIONS = [
-  { key: "overview", label: "Обзор", icon: LayoutDashboard },
-  { key: "branches", label: "Отделения", icon: Building2 },
-  { key: "doctors", label: "Врачи", icon: Stethoscope },
-  { key: "news", label: "Новости", icon: Newspaper },
-  { key: "gallery", label: "Галерея", icon: ImageIcon },
-  { key: "statistics", label: "Статистика", icon: BarChart3 },
-  { key: "feedback", label: "Отзывы", icon: MessageSquare },
-  { key: "receptions", label: "Регистратура", icon: Users },
-  { key: "about", label: "О нас", icon: Info },
-  { key: "contacts", label: "Контакты", icon: Phone },
-];
-
 function Sidebar({ active, setActive, onLogout, sidebarOpen, setSidebarOpen }: any) {
+  const { t } = useTranslation();
+  
+  const SECTIONS = [
+    { key: "overview", label: t('admin.overview'), icon: LayoutDashboard },
+    { key: "branches", label: t('admin.branches'), icon: Building2 },
+    { key: "doctors", label: t('admin.doctors'), icon: Stethoscope },
+    { key: "news", label: t('admin.news'), icon: Newspaper },
+    { key: "gallery", label: t('admin.gallery'), icon: ImageIcon },
+    { key: "statistics", label: t('admin.statistics'), icon: BarChart3 },
+    { key: "feedback", label: t('admin.feedback'), icon: MessageSquare },
+    { key: "receptions", label: t('admin.receptions'), icon: Users },
+    { key: "about", label: t('admin.about'), icon: Info },
+    { key: "contacts", label: t('admin.contacts'), icon: Phone },
+  ];
+
   return (
     <>
       {/* Mobile overlay */}
@@ -33,7 +37,7 @@ function Sidebar({ active, setActive, onLogout, sidebarOpen, setSidebarOpen }: a
       <aside className={`fixed left-0 top-0 h-full w-64 z-40 transition-transform duration-300 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 flex flex-col`} style={{ background: "hsl(var(--sidebar-background))" }}>
         <div className="p-5 border-b border-sidebar-border">
           <img src={logo} alt="ASL Medline" className="h-10 w-auto" />
-          <p className="text-sidebar-foreground/60 text-xs mt-2 font-medium uppercase tracking-widest">Панель администратора</p>
+          <p className="text-sidebar-foreground/60 text-xs mt-2 font-medium uppercase tracking-widest">{t('admin.dashboard')}</p>
         </div>
 
         <nav className="flex-1 overflow-y-auto py-4 px-3">
@@ -53,16 +57,17 @@ function Sidebar({ active, setActive, onLogout, sidebarOpen, setSidebarOpen }: a
           ))}
         </nav>
 
-        <div className="p-4 border-t border-sidebar-border">
-          <Link to="/" className="flex items-center gap-2 text-sidebar-foreground/60 hover:text-sidebar-foreground text-xs mb-3 transition-colors">
-            <ChevronRight className="w-3 h-3" /> На сайт
+        <div className="p-4 border-t border-sidebar-border space-y-3">
+          <LanguageSwitcher openUpward={true} />
+          <Link to="/" className="flex items-center gap-2 text-sidebar-foreground/60 hover:text-sidebar-foreground text-xs transition-colors">
+            <ChevronRight className="w-3 h-3" /> {t('admin.toWebsite')}
           </Link>
           <button
             onClick={onLogout}
             className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-sidebar-foreground/80 hover:bg-sidebar-accent transition-colors"
           >
             <LogOut className="w-4 h-4" />
-            Выйти
+            {t('admin.logout')}
           </button>
         </div>
       </aside>
@@ -349,7 +354,32 @@ function BranchesSection() {
           </div>
           <div>
             <label className="text-sm font-medium text-foreground mb-1 block">Медиа отделения</label>
-            <input type="file" multiple accept="image/*,video/*" onChange={e => setBranchFiles(Array.from(e.target.files || []))} className="text-sm text-muted-foreground" />
+            <div className="space-y-2">
+              <input 
+                type="file" 
+                accept="image/*,video/*" 
+                onChange={e => {
+                  if (e.target.files?.[0]) {
+                    setBranchFiles(prev => [...prev, e.target.files![0]]);
+                    e.target.value = '';
+                  }
+                }} 
+                className="text-sm text-muted-foreground" 
+              />
+              {branchFiles.length > 0 && (
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">{branchFiles.length} файлов выбрано</p>
+                  {branchFiles.map((f, idx) => f && (
+                    <div key={idx} className="flex items-center justify-between bg-muted/50 px-2 py-1 rounded text-xs">
+                      <span>{f.name} ({(f.size / 1024).toFixed(1)} KB)</span>
+                      <button onClick={() => setBranchFiles(prev => prev.filter((_, i) => i !== idx))} className="text-destructive hover:opacity-70">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Services */}
@@ -367,9 +397,22 @@ function BranchesSection() {
                 </div>
                 <div className="flex gap-2">
                   <input type="number" placeholder="Цена" value={s.price} onChange={e => setServices(prev => prev.map((x, j) => j === i ? { ...x, price: e.target.value } : x))} className="flex-1 px-2 py-1.5 rounded-lg border border-border bg-background text-xs focus:outline-none" />
-                  <input type="file" multiple accept="image/*,video/*" onChange={e => setServices(prev => prev.map((x, j) => j === i ? { ...x, _files: Array.from(e.target.files || []) } : x))} className="text-xs text-muted-foreground flex-1" />
+                  <input 
+                    type="file" 
+                    accept="image/*,video/*" 
+                    onChange={e => {
+                      if (e.target.files?.[0]) {
+                        setServices(prev => prev.map((x, j) => j === i ? { ...x, _files: [...(x._files || []), e.target.files![0]] } : x));
+                        e.target.value = '';
+                      }
+                    }} 
+                    className="text-xs text-muted-foreground flex-1" 
+                  />
                   <button onClick={() => setServices(prev => prev.filter((_, j) => j !== i))} className="text-destructive hover:opacity-70"><X className="w-3.5 h-3.5" /></button>
                 </div>
+                {s._files && s._files.length > 0 && (
+                  <p className="text-xs text-muted-foreground">{s._files.length} файлов</p>
+                )}
               </div>
             ))}
           </div>
@@ -387,7 +430,20 @@ function BranchesSection() {
                   <button onClick={() => setTechs(prev => prev.filter((_, j) => j !== i))} className="text-destructive hover:opacity-70"><X className="w-3.5 h-3.5" /></button>
                 </div>
                 <input placeholder="Описание" value={t.description} onChange={e => setTechs(prev => prev.map((x, j) => j === i ? { ...x, description: e.target.value } : x))} className="w-full px-2 py-1.5 rounded-lg border border-border bg-background text-xs focus:outline-none" />
-                <input type="file" multiple accept="image/*,video/*" onChange={e => setTechs(prev => prev.map((x, j) => j === i ? { ...x, _files: Array.from(e.target.files || []) } : x))} className="text-xs text-muted-foreground" />
+                <input 
+                  type="file" 
+                  accept="image/*,video/*" 
+                  onChange={e => {
+                    if (e.target.files?.[0]) {
+                      setTechs(prev => prev.map((x, j) => j === i ? { ...x, _files: [...(x._files || []), e.target.files![0]] } : x));
+                      e.target.value = '';
+                    }
+                  }} 
+                  className="text-xs text-muted-foreground" 
+                />
+                {t._files && t._files.length > 0 && (
+                  <p className="text-xs text-muted-foreground">{t._files.length} файлов</p>
+                )}
               </div>
             ))}
           </div>
@@ -480,7 +536,32 @@ function DoctorsSection() {
           </div>
           <div>
             <label className="text-xs font-medium text-muted-foreground mb-1 block">Фото врача</label>
-            <input type="file" multiple accept="image/*,video/*" onChange={e => setDoctorFiles(Array.from(e.target.files || []))} className="text-sm text-muted-foreground" />
+            <div className="space-y-2">
+              <input 
+                type="file" 
+                accept="image/*,video/*" 
+                onChange={e => {
+                  if (e.target.files?.[0]) {
+                    setDoctorFiles(prev => [...prev, e.target.files![0]]);
+                    e.target.value = '';
+                  }
+                }} 
+                className="text-sm text-muted-foreground" 
+              />
+              {doctorFiles.length > 0 && (
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">{doctorFiles.length} файлов выбрано</p>
+                  {doctorFiles.map((f, idx) => f && (
+                    <div key={idx} className="flex items-center justify-between bg-muted/50 px-2 py-1 rounded text-xs">
+                      <span>{f.name} ({(f.size / 1024).toFixed(1)} KB)</span>
+                      <button onClick={() => setDoctorFiles(prev => prev.filter((_, i) => i !== idx))} className="text-destructive hover:opacity-70">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
           <div className="flex gap-3 pt-2">
             <button onClick={() => setModal(null)} className="flex-1 py-2.5 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors">Отмена</button>
@@ -523,19 +604,64 @@ function NewsSection() {
 
   const openCreate = () => { setForm({ title_uz: "", title_ru: "", title_en: "", description_uz: "", description_ru: "", description_en: "" }); setFiles([]); setModal({ type: "create" }); };
   const openEdit = (item: any) => { setForm({ title_uz: item.title_uz, title_ru: item.title_ru, title_en: item.title_en, description_uz: item.description_uz, description_ru: item.description_ru, description_en: item.description_en }); setFiles([]); setModal({ type: "edit", item }); };
+  const openView = (item: any) => { setModal({ type: "view", item }); };
 
   return (
     <div>
       <SectionHeader title="Новости" onAdd={openCreate} />
-      <DataTable
-        columns={[
-          { key: "id", label: "ID" },
-          { key: "title_ru", label: "Заголовок (RU)" },
-          { key: "media", label: "Медиа", render: (r: any) => r.media?.length || 0 },
-        ]}
-        rows={items} onEdit={openEdit} onDelete={(r: any) => setConfirm(r)}
-      />
-      <Modal open={!!modal} onClose={() => setModal(null)} title={modal?.type === "create" ? "Добавить новость" : "Редактировать новость"}>
+      <div className="grid md:grid-cols-3 gap-4 mb-4">
+        {items.map((item: any) => {
+          const img = item.media?.find((m: any) => m.type === "image" || m.type?.includes("image"));
+          return (
+            <div key={item.id} className="group relative bg-card rounded-xl overflow-hidden shadow-card border border-border cursor-pointer" onClick={() => openView(item)}>
+              <div className="h-40 bg-muted flex items-center justify-center overflow-hidden">
+                {img ? (
+                  <img src={getMediaUrl(img.url)} alt="" className="w-full h-full object-cover" />
+                ) : <Newspaper className="w-10 h-10 text-muted-foreground/30" />}
+              </div>
+              <div className="p-3">
+                <p className="text-sm font-semibold text-primary truncate">{item.title_ru || item.title_en}</p>
+                <p className="text-xs text-muted-foreground line-clamp-2">{item.description_ru || item.description_en}</p>
+                <p className="text-xs text-muted-foreground mt-1">{item.media?.length || 0} медиа</p>
+              </div>
+              <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button onClick={(e) => { e.stopPropagation(); openEdit(item); }} className="p-1.5 rounded-lg bg-white/90 text-primary shadow"><Pencil className="w-3 h-3" /></button>
+                <button onClick={(e) => { e.stopPropagation(); setConfirm(item); }} className="p-1.5 rounded-lg bg-white/90 text-destructive shadow"><Trash2 className="w-3 h-3" /></button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {modal?.type === "view" && (
+        <Modal open={true} onClose={() => setModal(null)} title={modal.item.title_ru || modal.item.title_en}>
+          <div className="space-y-4">
+            {modal.item.media && modal.item.media.length > 0 && (
+              <div className="grid grid-cols-2 gap-2">
+                {modal.item.media.map((m: any) => m && (
+                  <div key={m.id} className="aspect-video rounded-lg overflow-hidden bg-muted">
+                    {m.type?.includes("image") ? (
+                      <img src={getMediaUrl(m.url)} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <video src={getMediaUrl(m.url)} className="w-full h-full object-cover" controls />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+            <div>
+              <p className="text-sm font-semibold text-primary mb-2">RU: {modal.item.title_ru}</p>
+              <p className="text-sm text-muted-foreground mb-3">{modal.item.description_ru}</p>
+              <p className="text-sm font-semibold text-primary mb-2">EN: {modal.item.title_en}</p>
+              <p className="text-sm text-muted-foreground mb-3">{modal.item.description_en}</p>
+              <p className="text-sm font-semibold text-primary mb-2">UZ: {modal.item.title_uz}</p>
+              <p className="text-sm text-muted-foreground">{modal.item.description_uz}</p>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      <Modal open={modal?.type === "create" || modal?.type === "edit"} onClose={() => setModal(null)} title={modal?.type === "create" ? "Добавить новость" : "Редактировать новость"}>
         <div className="space-y-3">
           {[["title_ru", "Заголовок RU"], ["title_en", "Заголовок EN"], ["title_uz", "Заголовок UZ"]].map(([k, label]) => (
             <div key={k}><label className="text-xs font-medium text-muted-foreground mb-1 block">{label}</label>
@@ -545,8 +671,35 @@ function NewsSection() {
             <div key={k}><label className="text-xs font-medium text-muted-foreground mb-1 block">{label}</label>
               <textarea value={(form as any)[k]} onChange={e => setForm({ ...form, [k]: e.target.value })} rows={3} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none" /></div>
           ))}
-          <div><label className="text-xs font-medium text-muted-foreground mb-1 block">Изображения</label>
-            <input type="file" multiple accept="image/*,video/*" onChange={e => setFiles(Array.from(e.target.files || []))} className="text-sm text-muted-foreground" /></div>
+          <div>
+            <label className="text-xs font-medium text-muted-foreground mb-1 block">Изображения</label>
+            <div className="space-y-2">
+              <input 
+                type="file" 
+                accept="image/*,video/*" 
+                onChange={e => {
+                  if (e.target.files?.[0]) {
+                    setFiles(prev => [...prev, e.target.files![0]]);
+                    e.target.value = '';
+                  }
+                }} 
+                className="text-sm text-muted-foreground" 
+              />
+              {files.length > 0 && (
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">{files.length} файлов выбрано</p>
+                  {files.map((f, idx) => f && (
+                    <div key={idx} className="flex items-center justify-between bg-muted/50 px-2 py-1 rounded text-xs">
+                      <span>{f.name} ({(f.size / 1024).toFixed(1)} KB)</span>
+                      <button onClick={() => setFiles(prev => prev.filter((_, i) => i !== idx))} className="text-destructive hover:opacity-70">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
           <div className="flex gap-3 pt-2">
             <button onClick={() => setModal(null)} className="flex-1 py-2.5 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors">Отмена</button>
             <button onClick={save} disabled={loading} className="flex-1 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 disabled:opacity-60">{loading ? "..." : "Сохранить"}</button>
@@ -592,7 +745,7 @@ function GalleryAdminSection() {
           <div key={g.id} className="group relative bg-card rounded-xl overflow-hidden shadow-card border border-border">
             <div className="h-36 bg-muted flex items-center justify-center overflow-hidden">
               {g.media?.[0] ? (
-                <img src={`${MEDIA_BASE}${g.media[0].url}`} alt="" className="w-full h-full object-cover" />
+                <img src={getMediaUrl(g.media[0].url)} alt="" className="w-full h-full object-cover" />
               ) : <ImageIcon className="w-10 h-10 text-muted-foreground/30" />}
             </div>
             <div className="p-3">
@@ -612,8 +765,35 @@ function GalleryAdminSection() {
             <div key={k}><label className="text-xs font-medium text-muted-foreground mb-1 block">{label}</label>
               <input value={(form as any)[k]} onChange={e => setForm({ ...form, [k]: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" /></div>
           ))}
-          <div><label className="text-xs font-medium text-muted-foreground mb-1 block">Медиафайлы</label>
-            <input type="file" multiple accept="image/*,video/*" onChange={e => setFiles(Array.from(e.target.files || []))} className="text-sm text-muted-foreground" /></div>
+          <div>
+            <label className="text-xs font-medium text-muted-foreground mb-1 block">Медиафайлы</label>
+            <div className="space-y-2">
+              <input 
+                type="file" 
+                accept="image/*,video/*" 
+                onChange={e => {
+                  if (e.target.files?.[0]) {
+                    setFiles(prev => [...prev, e.target.files![0]]);
+                    e.target.value = '';
+                  }
+                }} 
+                className="text-sm text-muted-foreground" 
+              />
+              {files.length > 0 && (
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">{files.length} файлов выбрано</p>
+                  {files.map((f, idx) => f && (
+                    <div key={idx} className="flex items-center justify-between bg-muted/50 px-2 py-1 rounded text-xs">
+                      <span>{f.name} ({(f.size / 1024).toFixed(1)} KB)</span>
+                      <button onClick={() => setFiles(prev => prev.filter((_, i) => i !== idx))} className="text-destructive hover:opacity-70">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
           <div className="flex gap-3 pt-2">
             <button onClick={() => setModal(null)} className="flex-1 py-2.5 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors">Отмена</button>
             <button onClick={save} disabled={loading} className="flex-1 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 disabled:opacity-60">{loading ? "..." : "Сохранить"}</button>
@@ -758,8 +938,35 @@ function ReceptionsSection() {
             <div key={k}><label className="text-xs font-medium text-muted-foreground mb-1 block">{label}</label>
               <input type={k === "password" ? "password" : "text"} value={(form as any)[k]} onChange={e => setForm({ ...form, [k]: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" /></div>
           ))}
-          <div><label className="text-xs font-medium text-muted-foreground mb-1 block">Фото</label>
-            <input type="file" multiple accept="image/*" onChange={e => setFiles(Array.from(e.target.files || []))} className="text-sm text-muted-foreground" /></div>
+          <div>
+            <label className="text-xs font-medium text-muted-foreground mb-1 block">Фото</label>
+            <div className="space-y-2">
+              <input 
+                type="file" 
+                accept="image/*" 
+                onChange={e => {
+                  if (e.target.files?.[0]) {
+                    setFiles(prev => [...prev, e.target.files![0]]);
+                    e.target.value = '';
+                  }
+                }} 
+                className="text-sm text-muted-foreground" 
+              />
+              {files.length > 0 && (
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">{files.length} файлов выбрано</p>
+                  {files.map((f, idx) => f && (
+                    <div key={idx} className="flex items-center justify-between bg-muted/50 px-2 py-1 rounded text-xs">
+                      <span>{f.name} ({(f.size / 1024).toFixed(1)} KB)</span>
+                      <button onClick={() => setFiles(prev => prev.filter((_, i) => i !== idx))} className="text-destructive hover:opacity-70">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
           <div className="flex gap-3 pt-2">
             <button onClick={() => setModal(null)} className="flex-1 py-2.5 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors">Отмена</button>
             <button onClick={save} disabled={loading} className="flex-1 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 disabled:opacity-60">{loading ? "..." : "Создать"}</button>
@@ -871,6 +1078,7 @@ function ContactsAdminSection() {
 
 // ── Main Admin Dashboard ───────────────────────────────────────────────
 export default function AdminDashboard() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { logout } = useAuth();
   const [active, setActive] = useState("overview");
@@ -882,6 +1090,19 @@ export default function AdminDashboard() {
   }, [navigate]);
 
   const handleLogout = () => { logout(); navigate("/admin/login"); };
+
+  const SECTIONS = [
+    { key: "overview", label: t('admin.overview'), icon: LayoutDashboard },
+    { key: "branches", label: t('admin.branches'), icon: Building2 },
+    { key: "doctors", label: t('admin.doctors'), icon: Stethoscope },
+    { key: "news", label: t('admin.news'), icon: Newspaper },
+    { key: "gallery", label: t('admin.gallery'), icon: ImageIcon },
+    { key: "statistics", label: t('admin.statistics'), icon: BarChart3 },
+    { key: "feedback", label: t('admin.feedback'), icon: MessageSquare },
+    { key: "receptions", label: t('admin.receptions'), icon: Users },
+    { key: "about", label: t('admin.about'), icon: Info },
+    { key: "contacts", label: t('admin.contacts'), icon: Phone },
+  ];
 
   const sections: Record<string, React.ReactNode> = {
     overview: <OverviewSection />,

@@ -5,6 +5,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Landing from "./pages/Landing";
+import DoctorsPage from "./pages/DoctorsPage";
+import BranchesPage from "./pages/BranchesPage";
+import NewsPage from "./pages/NewsPage";
+import GalleryPage from "./pages/GalleryPage";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ReceptionLogin from "./pages/reception/ReceptionLogin";
@@ -19,9 +23,13 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
+        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <Routes>
             <Route path="/" element={<Landing />} />
+            <Route path="/doctors" element={<DoctorsPage />} />
+            <Route path="/branches" element={<BranchesPage />} />
+            <Route path="/news" element={<NewsPage />} />
+            <Route path="/gallery" element={<GalleryPage />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/reception/login" element={<ReceptionLogin />} />

@@ -1,25 +1,27 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import logo from "@/assets/logo.png";
 import { Menu, X, Phone } from "lucide-react";
 import { api } from "@/lib/api";
-
-const NAV_ITEMS = [
-  { label: "Главная", href: "#hero" },
-  { label: "О нас", href: "#about" },
-  { label: "Отделения", href: "#branches" },
-  { label: "Врачи", href: "#doctors" },
-  { label: "Услуги", href: "#services" },
-  { label: "Новости", href: "#news" },
-  { label: "Галерея", href: "#gallery" },
-  { label: "Отзывы", href: "#feedback" },
-  { label: "Контакты", href: "#contacts" },
-];
+import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function Navbar() {
+  const { t } = useTranslation();
+  const location = useLocation();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [phone, setPhone] = useState<string | null>(null);
+
+  const NAV_ITEMS = [
+    { label: t('nav.home'), href: "/" },
+    { label: t('nav.about'), href: "/#about" },
+    { label: t('nav.branches'), href: "/branches" },
+    { label: t('nav.doctors'), href: "/doctors" },
+    { label: t('nav.news'), href: "/news" },
+    { label: t('nav.gallery'), href: "/gallery" },
+    { label: t('nav.contacts'), href: "/#contacts" },
+  ];
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -37,10 +39,13 @@ export default function Navbar() {
     }).catch(() => {});
   }, []);
 
-  const scrollTo = (href: string) => {
+  const handleClick = (href: string) => {
     setOpen(false);
-    const el = document.querySelector(href);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
+    // If it's a hash link on the same page, scroll
+    if (href.startsWith("/#") && location.pathname === "/") {
+      const el = document.querySelector(href.substring(1));
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   return (
@@ -58,17 +63,19 @@ export default function Navbar() {
         <ul className="hidden lg:flex items-center gap-6">
           {NAV_ITEMS.map((item) => (
             <li key={item.href}>
-              <button
-                onClick={() => scrollTo(item.href)}
+              <Link
+                to={item.href}
+                onClick={() => handleClick(item.href)}
                 className="nav-link text-white/90 hover:text-white text-sm font-medium tracking-wide"
               >
                 {item.label}
-              </button>
+              </Link>
             </li>
           ))}
         </ul>
 
         <div className="hidden lg:flex items-center gap-3">
+          <LanguageSwitcher />
           {phone && (
             <a
               href={`tel:${phone}`}
@@ -101,15 +108,21 @@ export default function Navbar() {
           <ul className="flex flex-col gap-1 px-4">
             {NAV_ITEMS.map((item) => (
               <li key={item.href}>
-                <button
-                  onClick={() => scrollTo(item.href)}
-                  className="w-full text-left py-3 px-4 text-white/90 hover:text-white hover:bg-white/10 rounded-lg transition-colors text-sm font-medium"
+                <Link
+                  to={item.href}
+                  onClick={() => handleClick(item.href)}
+                  className="block w-full text-left py-3 px-4 text-white/90 hover:text-white hover:bg-white/10 rounded-lg transition-colors text-sm font-medium"
                 >
                   {item.label}
-                </button>
+                </Link>
               </li>
             ))}
-            <li className="pt-2 border-t border-white/10 mt-2 flex gap-2">
+            <li className="pt-2 border-t border-white/10 mt-2">
+              <div className="px-4 py-2">
+                <LanguageSwitcher />
+              </div>
+            </li>
+            <li className="flex gap-2">
               <Link
                 to="/admin/login"
                 className="flex-1 text-center py-2.5 rounded-lg text-sm font-semibold border border-white/20 text-white hover:bg-white/10 transition-colors"

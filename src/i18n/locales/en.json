@@ -1,0 +1,107 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "branches": "Departments",
+    "doctors": "Doctors",
+    "services": "Services",
+    "news": "News",
+    "gallery": "Gallery",
+    "feedback": "Reviews",
+    "contacts": "Contacts"
+  },
+  "hero": {
+    "badge": "Modern medicine for you",
+    "title": "ASL MEDLINE",
+    "subtitle": "Clinic",
+    "description": "Advanced clinic with modern equipment and highly qualified specialists. Your health is our priority.",
+    "bookAppointment": "Book Appointment",
+    "ourDepartments": "Our Departments",
+    "diagnostics": "Diagnostics",
+    "specialists": "Specialists",
+    "certificates": "Certificates",
+    "support": "24/7 Support"
+  },
+  "stats": {
+    "suffix": "+"
+  },
+  "about": {
+    "label": "About Clinic",
+    "title": "ASL Medline — Your Reliable Health Partner"
+  },
+  "branches": {
+    "label": "Our Departments",
+    "title": "Specialized Centers",
+    "equipment": "equipment units",
+    "loading": "Loading departments...",
+    "seeAll": "See All Departments"
+  },
+  "doctors": {
+    "label": "Our Team",
+    "title": "Experienced Specialists",
+    "awards": "awards",
+    "loading": "Loading doctors...",
+    "seeAll": "See All Doctors"
+  },
+  "services": {
+    "label": "Services",
+    "title": "Medical Services and Prices",
+    "currency": "sum",
+    "loading": "Loading services..."
+  },
+  "news": {
+    "label": "News",
+    "title": "Latest Clinic News",
+    "loading": "Loading news...",
+    "seeAll": "See All News"
+  },
+  "gallery": {
+    "label": "Gallery",
+    "title": "Our Clinic",
+    "empty": "Gallery is empty",
+    "seeAll": "See All Photos"
+  },
+  "feedback": {
+    "label": "Reviews",
+    "title": "What Our Patients Say",
+    "leaveReview": "Leave a Review",
+    "thankYou": "Thank you for your review!",
+    "willBePublished": "It will be published after verification.",
+    "leaveAnother": "Leave another",
+    "fullName": "Your name",
+    "phone": "Phone number",
+    "email": "Email",
+    "content": "Your review...",
+    "submit": "Submit Review",
+    "sending": "Sending...",
+    "error": "Error sending. Please try again."
+  },
+  "consultation": {
+    "label": "Get Consultation",
+    "title": "Book an Appointment",
+    "firstName": "First Name",
+    "secondName": "Last Name",
+    "thirdName": "Middle Name (optional)",
+    "phone": "Phone Number",
+    "problem": "Describe your problem",
+    "attachFiles": "Attach files (optional)",
+    "addFile": "Add File",
+    "filesSelected": "files selected",
+    "submit": "Submit Request",
+    "sending": "Sending...",
+    "thankYou": "Thank you for your request!",
+    "willContact": "We will contact you shortly.",
+    "bookAnother": "Book another",
+    "error": "Error sending. Please try again."
+  },
+  "contacts": {
+    "label": "Contact Us",
+    "title": "Contact Information",
+    "loading": "Loading contacts..."
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "admin": "Administrator",
+    "reception": "Reception"
+  }
+}

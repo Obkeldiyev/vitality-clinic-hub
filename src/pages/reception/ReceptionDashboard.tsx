@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { api, getRole, MEDIA_BASE } from "@/lib/api";
+import { useTranslation } from "react-i18next";
+import { api, getRole, MEDIA_BASE, getMediaUrl } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import logo from "@/assets/logo.png";
 import { Users, Clock, LogOut, Plus, Trash2, X, Menu, ChevronRight } from "lucide-react";
 
@@ -21,14 +23,15 @@ function Modal({ open, onClose, title, children }: any) {
 }
 
 function ConfirmDialog({ open, onClose, onConfirm, message }: any) {
+  const { t } = useTranslation();
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
       <div className="bg-card rounded-2xl shadow-2xl p-6 w-full max-w-sm">
         <p className="text-foreground mb-6 text-center">{message}</p>
         <div className="flex gap-3">
-          <button onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors">Отмена</button>
-          <button onClick={onConfirm} className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white bg-destructive hover:opacity-90 transition-opacity">Удалить</button>
+          <button onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors">{t('admin.cancel')}</button>
+          <button onClick={onConfirm} className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white bg-destructive hover:opacity-90 transition-opacity">{t('admin.delete')}</button>
         </div>
       </div>
     </div>
@@ -36,6 +39,7 @@ function ConfirmDialog({ open, onClose, onConfirm, message }: any) {
 }
 
 export default function ReceptionDashboard() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { logout } = useAuth();
   const [tab, setTab] = useState<"patients" | "history">("patients");
@@ -93,12 +97,12 @@ export default function ReceptionDashboard() {
       <aside className={`fixed left-0 top-0 h-full w-64 z-40 transition-transform duration-300 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 flex flex-col`} style={{ background: "hsl(var(--clinic-red))" }}>
         <div className="p-5 border-b border-white/20">
           <img src={logo} alt="ASL Medline" className="h-10 w-auto" />
-          <p className="text-white/60 text-xs mt-2 font-medium uppercase tracking-widest">Регистратура</p>
+          <p className="text-white/60 text-xs mt-2 font-medium uppercase tracking-widest">{t('admin.receptions')}</p>
         </div>
         <nav className="flex-1 overflow-y-auto py-4 px-3">
           {[
-            { key: "patients", label: "Пациенты", icon: Users },
-            { key: "history", label: "История", icon: Clock },
+            { key: "patients", label: t('admin.patients'), icon: Users },
+            { key: "history", label: t('admin.history'), icon: Clock },
           ].map(({ key, label, icon: Icon }) => (
             <button
               key={key}
@@ -113,11 +117,14 @@ export default function ReceptionDashboard() {
           ))}
         </nav>
         <div className="p-4 border-t border-white/20">
+          <div className="mb-3">
+            <LanguageSwitcher openUpward={true} />
+          </div>
           <Link to="/" className="flex items-center gap-2 text-white/60 hover:text-white text-xs mb-3 transition-colors">
-            <ChevronRight className="w-3 h-3" /> На сайт
+            <ChevronRight className="w-3 h-3" /> {t('nav.home')}
           </Link>
           <button onClick={handleLogout} className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-white/80 hover:bg-white/10 transition-colors">
-            <LogOut className="w-4 h-4" /> Выйти
+            <LogOut className="w-4 h-4" /> {t('admin.logout')}
           </button>
         </div>
       </aside>
@@ -129,17 +136,17 @@ export default function ReceptionDashboard() {
             <Menu className="w-5 h-5" />
           </button>
           <h1 className="font-display font-bold text-primary text-lg">
-            {tab === "patients" ? "Пациенты" : "История пациентов"}
+            {tab === "patients" ? t('admin.patients') : t('admin.history')}
           </h1>
           <div className="ml-auto flex items-center gap-3">
-            <span className="text-xs text-muted-foreground bg-muted px-3 py-1.5 rounded-full font-medium">Регистратура</span>
+            <span className="text-xs text-muted-foreground bg-muted px-3 py-1.5 rounded-full font-medium">{t('admin.receptions')}</span>
             {tab === "patients" && (
               <button
                 onClick={() => setCreateModal(true)}
                 className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
                 style={{ background: "hsl(var(--clinic-red))" }}
               >
-                <Plus className="w-4 h-4" /> Новый пациент
+                <Plus className="w-4 h-4" /> {t('admin.add')} {t('admin.patients')}
               </button>
             )}
           </div>
@@ -148,7 +155,7 @@ export default function ReceptionDashboard() {
         <main className="p-6">
           {/* Tabs */}
           <div className="flex gap-2 mb-6">
-            {[{ key: "patients", label: "Активные" }, { key: "history", label: "История" }].map(({ key, label }) => (
+            {[{ key: "patients", label: t('admin.patients') }, { key: "history", label: t('admin.history') }].map(({ key, label }) => (
               <button
                 key={key}
                 onClick={() => setTab(key as any)}
@@ -189,8 +196,8 @@ export default function ReceptionDashboard() {
                     <div className="flex gap-2 mt-3 overflow-x-auto">
                       {p.media.slice(0, 3).map((m: any) => (
                         <div key={m.id} className="w-12 h-12 rounded-lg overflow-hidden bg-muted flex-shrink-0">
-                          {m.type?.startsWith("image") || m.type === "IMAGE" ? (
-                            <img src={`${MEDIA_BASE}${m.url}`} alt="" className="w-full h-full object-cover" />
+                          {m.type?.includes("image") ? (
+                            <img src={getMediaUrl(m.url)} alt="" className="w-full h-full object-cover" />
                           ) : <div className="w-full h-full bg-muted" />}
                         </div>
                       ))}
@@ -274,8 +281,8 @@ export default function ReceptionDashboard() {
                 <div className="grid grid-cols-3 gap-2">
                   {selected.media.map((m: any) => (
                     <div key={m.id} className="aspect-square rounded-lg overflow-hidden bg-muted">
-                      {m.type === "image" || m.type === "IMAGE" ? (
-                        <img src={`${MEDIA_BASE}${m.url}`} alt="" className="w-full h-full object-cover" />
+                      {m.type?.includes("image") ? (
+                        <img src={getMediaUrl(m.url)} alt="" className="w-full h-full object-cover" />
                       ) : <div className="w-full h-full bg-muted flex items-center justify-center text-xs text-muted-foreground">Video</div>}
                     </div>
                   ))}

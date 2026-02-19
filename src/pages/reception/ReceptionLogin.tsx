@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { api, setToken, setRole, setUser } from "@/lib/api";
+import { useTranslation } from "react-i18next";
+import { api, setToken, setRefreshToken, setRole, setUser } from "@/lib/api";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import logo from "@/assets/logo.png";
 import { Lock, User, Eye, EyeOff } from "lucide-react";
 
 export default function ReceptionLogin() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [form, setForm] = useState({ username: "", password: "" });
   const [loading, setLoading] = useState(false);
@@ -16,12 +19,23 @@ export default function ReceptionLogin() {
     setLoading(true);
     setError("");
     try {
+      console.log("Attempting login with:", form);
       const res: any = await api.receptionLogin(form);
-      setToken(res.data?.token || res.token);
-      setRole("RECEPTION");
-      setUser(res.data?.reception || res.data);
-      navigate("/reception");
+      console.log("Login response:", res);
+      
+      if (res.success && res.data && Array.isArray(res.data) && res.data.length >= 2) {
+        const [access_token, refresh_token] = res.data;
+        setToken(access_token);
+        setRefreshToken(refresh_token);
+        setRole("RECEPTION");
+        console.log("Login successful, navigating to /reception");
+        navigate("/reception");
+      } else {
+        console.error("Invalid response format:", res);
+        throw new Error(res.message || "Invalid response format");
+      }
     } catch (err: any) {
+      console.error("Login error:", err);
       setError(err.message || "Неверные данные");
     } finally {
       setLoading(false);
@@ -30,6 +44,11 @@ export default function ReceptionLogin() {
 
   return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: "hsl(var(--clinic-red))" }}>
+      {/* Language Switcher */}
+      <div className="absolute top-4 right-4 z-10">
+        <LanguageSwitcher />
+      </div>
+      
       <div className="absolute inset-0 opacity-10 pointer-events-none" style={{
         backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
         backgroundSize: "32px 32px"
@@ -39,8 +58,8 @@ export default function ReceptionLogin() {
         <div className="bg-card rounded-3xl shadow-2xl p-8">
           <div className="flex flex-col items-center mb-8">
             <img src={logo} alt="ASL Medline" className="h-14 w-auto mb-4" />
-            <h1 className="font-display font-bold text-2xl text-primary">Вход для регистратуры</h1>
-            <p className="text-muted-foreground text-sm mt-1">Введите ваши данные</p>
+            <h1 className="font-display font-bold text-2xl text-primary">{t('admin.receptions')}</h1>
+            <p className="text-muted-foreground text-sm mt-1">{t('admin.loginPrompt')}</p>
           </div>
 
           <form onSubmit={submit} className="space-y-4">
@@ -48,7 +67,7 @@ export default function ReceptionLogin() {
               <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
                 type="text"
-                placeholder="Имя пользователя"
+                placeholder={t('admin.username')}
                 value={form.username}
                 onChange={(e) => setForm({ ...form, username: e.target.value })}
                 required

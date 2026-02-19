@@ -1,0 +1,158 @@
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+import Navbar from '@/components/Navbar';
+import CursorBackground from '@/components/CursorBackground';
+import { api, getMediaUrl } from '@/lib/api';
+import { Stethoscope, Award, X, ArrowLeft } from 'lucide-react';
+import logo from '@/assets/logo.png';
+
+export default function DoctorsPage() {
+  const { t } = useTranslation();
+  const [doctors, setDoctors] = useState<any[]>([]);
+  const [selectedDoctor, setSelectedDoctor] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api.getDoctors()
+      .then((res: any) => {
+        setDoctors(res.data || []);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  return (
+    <div className="relative">
+      <div className="fixed inset-0 z-0">
+        <CursorBackground />
+      </div>
+
+      <div className="relative z-10 min-h-screen flex flex-col">
+        <Navbar />
+      
+        <main className="flex-1 container mx-auto px-4 pt-32 pb-16">
+          <Link to="/" className="inline-flex items-center gap-2 text-white/90 hover:text-white transition-colors mb-8">
+            <ArrowLeft className="w-4 h-4" />
+            {t('nav.home')}
+          </Link>
+
+          <div className="text-center mb-12">
+            <h1 className="font-display font-bold text-4xl text-white mb-4">{t('doctors.title')}</h1>
+            <p className="text-white/70">{t('doctors.label')}</p>
+          </div>
+
+          {loading ? (
+            <div className="text-center py-20">
+              <p className="text-white/70">{t('doctors.loading')}</p>
+            </div>
+          ) : doctors.length > 0 ? (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {doctors.map((doc: any) => {
+                const img = doc.media?.find((m: any) => m.type?.includes("image"));
+                return (
+                  <div
+                    key={doc.id}
+                    onClick={() => setSelectedDoctor(doc)}
+                    className="group bg-card rounded-2xl overflow-hidden shadow-card hover:shadow-hover transition-all duration-300 border border-border text-center hover:-translate-y-1 cursor-pointer"
+                  >
+                    <div className="h-56 overflow-hidden bg-muted">
+                      {img ? (
+                        <img
+                          src={getMediaUrl(img.url)}
+                          alt={`${doc.first_name} ${doc.second_name}`}
+                          className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center" style={{ background: "hsl(var(--primary)/0.06)" }}>
+                          <Stethoscope className="w-14 h-14 text-primary/25" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-5">
+                      <h3 className="font-display font-bold text-primary text-base mb-1">
+                        {doc.first_name} {doc.second_name}
+                      </h3>
+                      {doc.third_name && <p className="text-xs text-muted-foreground mb-2">{doc.third_name}</p>}
+                      <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">{doc.description}</p>
+                      {doc.awards?.length > 0 && (
+                        <div className="mt-3 flex items-center justify-center gap-1">
+                          <Award className="w-3.5 h-3.5 text-clinic-red" />
+                          <span className="text-xs text-clinic-red font-medium">{doc.awards.length} {t('doctors.awards')}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-20">
+              <Stethoscope className="w-16 h-16 mx-auto mb-4 text-white/30" />
+              <p className="text-white/70">No doctors available</p>
+            </div>
+          )}
+        </main>
+
+        <footer className="py-8 bg-foreground/80 backdrop-blur-sm text-center">
+          <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+            <img src={logo} alt="ASL Medline" className="h-8 w-auto" />
+            <p className="text-muted-foreground text-sm">
+              © {new Date().getFullYear()} ASL Medline Klinikasi. {t('footer.rights')}
+            </p>
+          </div>
+        </footer>
+      </div>
+
+      {selectedDoctor && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4" onClick={() => setSelectedDoctor(null)}>
+          <div className="bg-card rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="sticky top-0 bg-card border-b border-border p-4 flex items-center justify-between">
+              <h2 className="font-display font-bold text-xl text-primary">
+                {selectedDoctor.first_name} {selectedDoctor.second_name}
+              </h2>
+              <button onClick={() => setSelectedDoctor(null)} className="text-muted-foreground hover:text-foreground">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            
+            <div className="p-6">
+              <div className="flex gap-6 mb-6">
+                {selectedDoctor.media?.find((m: any) => m.type?.includes("image")) && (
+                  <img
+                    src={getMediaUrl(selectedDoctor.media.find((m: any) => m.type?.includes("image")).url)}
+                    alt={`${selectedDoctor.first_name} ${selectedDoctor.second_name}`}
+                    className="w-32 h-32 rounded-xl object-cover"
+                  />
+                )}
+                <div className="flex-1">
+                  <h3 className="font-semibold text-lg text-primary mb-2">
+                    {selectedDoctor.first_name} {selectedDoctor.second_name} {selectedDoctor.third_name}
+                  </h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{selectedDoctor.description}</p>
+                </div>
+              </div>
+
+              {selectedDoctor.awards?.length > 0 && (
+                <div>
+                  <h4 className="font-semibold text-primary mb-3 flex items-center gap-2">
+                    <Award className="w-5 h-5 text-clinic-red" />
+                    {t('doctors.awards')}
+                  </h4>
+                  <div className="space-y-3">
+                    {selectedDoctor.awards.map((award: any) => (
+                      <div key={award.id} className="bg-muted rounded-xl p-4">
+                        <h5 className="font-semibold text-sm text-primary mb-1">{award.title}</h5>
+                        <p className="text-xs text-muted-foreground">{award.level}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

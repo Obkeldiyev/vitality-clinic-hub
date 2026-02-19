@@ -8,8 +8,17 @@ export function setToken(token: string) {
   localStorage.setItem("clinic_token", token);
 }
 
+export function getRefreshToken(): string | null {
+  return localStorage.getItem("clinic_refresh_token");
+}
+
+export function setRefreshToken(token: string) {
+  localStorage.setItem("clinic_refresh_token", token);
+}
+
 export function removeToken() {
   localStorage.removeItem("clinic_token");
+  localStorage.removeItem("clinic_refresh_token");
   localStorage.removeItem("clinic_role");
   localStorage.removeItem("clinic_user");
 }
@@ -28,7 +37,12 @@ export function setUser(user: any) {
 
 export function getUser(): any | null {
   const u = localStorage.getItem("clinic_user");
-  return u ? JSON.parse(u) : null;
+  if (!u || u === "undefined" || u === "null") return null;
+  try {
+    return JSON.parse(u);
+  } catch {
+    return null;
+  }
 }
 
 async function request<T>(
@@ -43,7 +57,11 @@ async function request<T>(
 
   if (auth) {
     const token = getToken();
-    if (token) headers["Authorization"] = `Bearer ${token}`;
+    if (token) {
+      headers["access_token"] = token;
+    } else {
+      console.warn("Auth required but no token found");
+    }
   }
 
   const res = await fetch(`${BASE_URL}${path}`, { ...options, headers });
@@ -106,6 +124,8 @@ export const api = {
     getProfile: () => request<any>("/admin/profile", {}, true),
     getAdmins: () => request<any>("/admin", {}, true),
     createAdmin: (data: any) => request<any>("/admin/create", { method: "POST", body: JSON.stringify(data) }, true),
+    editUsername: (data: any) => request<any>("/admin/edit-username", { method: "PATCH", body: JSON.stringify(data) }, true),
+    editPassword: (data: any) => request<any>("/admin/edit-password", { method: "PATCH", body: JSON.stringify(data) }, true),
 
     // About
     createAbout: (data: any) => request<any>("/about/us", { method: "POST", body: JSON.stringify(data) }, true),
@@ -171,6 +191,10 @@ export const api = {
   // ── Reception endpoints ────────────────────────────────────────────
   reception: {
     getProfile: () => request<any>("/reception/profile/me", {}, true),
+    editProfile: (formData: FormData) =>
+      request<any>("/reception/profile/me", { method: "PATCH", body: formData }, true),
+    editUsername: (data: any) => request<any>("/reception/edit-username", { method: "PATCH", body: JSON.stringify(data) }, true),
+    editPassword: (data: any) => request<any>("/reception/edit-password", { method: "PATCH", body: JSON.stringify(data) }, true),
     getPatients: () => request<any>("/patient", {}, true),
     getHistory: () => request<any>("/patient/history", {}, true),
     getPatient: (id: string) => request<any>(`/patient/${id}`, {}, true),
@@ -180,3 +204,18 @@ export const api = {
 };
 
 export const MEDIA_BASE = BASE_URL;
+
+// Helper function to get full media URL
+export function getMediaUrl(path: string | null | undefined): string {
+  if (!path) {
+    console.log("getMediaUrl: path is null/undefined");
+    return "";
+  }
+  if (path.startsWith("http://") || path.startsWith("https://")) {
+    console.log("getMediaUrl: already full URL:", path);
+    return path;
+  }
+  const fullUrl = `${MEDIA_BASE}${path.startsWith("/") ? path : `/${path}`}`;
+  console.log("getMediaUrl: converting", path, "to", fullUrl);
+  return fullUrl;
+}
