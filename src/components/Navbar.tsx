@@ -56,7 +56,7 @@ export default function Navbar() {
     >
       <div className="container mx-auto flex items-center justify-between">
         <Link to="/" className="flex items-center">
-          <img src={logo} alt="ASL Medline" className="h-10 w-auto object-contain" />
+          <img src={logo} alt="ASL Medline" className="h-20 w-auto object-contain" />
         </Link>
 
         {/* Desktop nav */}

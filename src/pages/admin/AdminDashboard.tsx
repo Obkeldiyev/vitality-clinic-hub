@@ -277,36 +277,117 @@ function BranchesSection() {
       fd.append("description", form.description);
 
       if (modal?.type === "create") {
-        const svcData = services.map(s => ({ key: s.key, title_en: s.title_en, title_ru: s.title_ru, title_uz: s.title_uz, price: Number(s.price) }));
-        const techData = techs.map(t => ({ key: t.key, title: t.title, description: t.description }));
+        // For CREATE: backend expects services and techs arrays WITHOUT keys
+        const svcData = services.map(s => ({ 
+          title_en: s.title_en, 
+          title_ru: s.title_ru, 
+          title_uz: s.title_uz, 
+          price: Number(s.price) 
+        }));
+        const techData = techs.map(t => ({ 
+          title: t.title, 
+          description: t.description 
+        }));
+        
         fd.append("services", JSON.stringify(svcData));
         fd.append("techs", JSON.stringify(techData));
+        
+        // Branch media
         for (const f of branchFiles) fd.append("branch_media", f);
-        for (const s of services) {
-          if (s._files) for (const f of s._files) fd.append(`service_media__${s.key}`, f);
-        }
-        for (const t of techs) {
-          if (t._files) for (const f of t._files) fd.append(`tech_media__${t.key}`, f);
-        }
+        
+        // Service media - use INDEX not key
+        services.forEach((s, index) => {
+          if (s._files) {
+            for (const f of s._files) {
+              fd.append(`service_media__${index}`, f);
+            }
+          }
+        });
+        
+        // Tech media - use INDEX not key
+        techs.forEach((t, index) => {
+          if (t._files) {
+            for (const f of t._files) {
+              fd.append(`tech_media__${index}`, f);
+            }
+          }
+        });
+        
         await api.admin.createBranch(fd);
       } else {
-        const svcUpsert = services.map(s => s._existing ? { id: s.id, title_en: s.title_en, title_ru: s.title_ru, title_uz: s.title_uz, price: Number(s.price) } : { key: s.key, title_en: s.title_en, title_ru: s.title_ru, title_uz: s.title_uz, price: Number(s.price) });
-        const techUpsert = techs.map(t => t._existing ? { id: t.id, title: t.title, description: t.description } : { key: t.key, title: t.title, description: t.description });
+        // For EDIT: different logic
+        const svcUpsert = services.map(s => s._existing ? { 
+          id: s.id, 
+          title_en: s.title_en, 
+          title_ru: s.title_ru, 
+          title_uz: s.title_uz, 
+          price: Number(s.price) 
+        } : { 
+          title_en: s.title_en, 
+          title_ru: s.title_ru, 
+          title_uz: s.title_uz, 
+          price: Number(s.price) 
+        });
+        
+        const techUpsert = techs.map(t => t._existing ? { 
+          id: t.id, 
+          title: t.title, 
+          description: t.description 
+        } : { 
+          title: t.title, 
+          description: t.description 
+        });
+        
         fd.append("services_upsert", JSON.stringify(svcUpsert));
         fd.append("techs_upsert", JSON.stringify(techUpsert));
+        
+        // Branch media
         for (const f of branchFiles) fd.append("branch_media", f);
-        for (const s of services) {
-          if (s._files) for (const f of s._files) {
-            const key = s._existing ? `service_media__${s.id}` : `service_media__${s.key}`;
-            fd.append(key, f);
+        
+        // Service media
+        let newServiceIndex = 0;
+        services.forEach((s) => {
+          if (s._files && s._files.length > 0) {
+            if (s._existing) {
+              // Existing service: use service ID
+              for (const f of s._files) {
+                fd.append(`service_media__${s.id}`, f);
+              }
+            } else {
+              // New service: use new index
+              for (const f of s._files) {
+                fd.append(`service_media__new__${newServiceIndex}`, f);
+              }
+              newServiceIndex++;
+            }
+          } else if (!s._existing) {
+            // Count new services even without files
+            newServiceIndex++;
           }
-        }
-        for (const t of techs) {
-          if (t._files) for (const f of t._files) {
-            const key = t._existing ? `tech_media__${t.id}` : `tech_media__${t.key}`;
-            fd.append(key, f);
+        });
+        
+        // Tech media
+        let newTechIndex = 0;
+        techs.forEach((t) => {
+          if (t._files && t._files.length > 0) {
+            if (t._existing) {
+              // Existing tech: use tech ID
+              for (const f of t._files) {
+                fd.append(`tech_media__${t.id}`, f);
+              }
+            } else {
+              // New tech: use new index
+              for (const f of t._files) {
+                fd.append(`tech_media__new__${newTechIndex}`, f);
+              }
+              newTechIndex++;
+            }
+          } else if (!t._existing) {
+            // Count new techs even without files
+            newTechIndex++;
           }
-        }
+        });
+        
         await api.admin.editBranch(modal!.item.id, fd);
       }
       setModal(null);
@@ -358,9 +439,11 @@ function BranchesSection() {
               <input 
                 type="file" 
                 accept="image/*,video/*" 
+                multiple
                 onChange={e => {
-                  if (e.target.files?.[0]) {
-                    setBranchFiles(prev => [...prev, e.target.files![0]]);
+                  if (e.target.files && e.target.files.length > 0) {
+                    const newFiles = Array.from(e.target.files);
+                    setBranchFiles(prev => [...prev, ...newFiles]);
                     e.target.value = '';
                   }
                 }} 
@@ -400,9 +483,11 @@ function BranchesSection() {
                   <input 
                     type="file" 
                     accept="image/*,video/*" 
+                    multiple
                     onChange={e => {
-                      if (e.target.files?.[0]) {
-                        setServices(prev => prev.map((x, j) => j === i ? { ...x, _files: [...(x._files || []), e.target.files![0]] } : x));
+                      if (e.target.files && e.target.files.length > 0) {
+                        const newFiles = Array.from(e.target.files);
+                        setServices(prev => prev.map((x, j) => j === i ? { ...x, _files: [...(x._files || []), ...newFiles] } : x));
                         e.target.value = '';
                       }
                     }} 
@@ -433,9 +518,11 @@ function BranchesSection() {
                 <input 
                   type="file" 
                   accept="image/*,video/*" 
+                  multiple
                   onChange={e => {
-                    if (e.target.files?.[0]) {
-                      setTechs(prev => prev.map((x, j) => j === i ? { ...x, _files: [...(x._files || []), e.target.files![0]] } : x));
+                    if (e.target.files && e.target.files.length > 0) {
+                      const newFiles = Array.from(e.target.files);
+                      setTechs(prev => prev.map((x, j) => j === i ? { ...x, _files: [...(x._files || []), ...newFiles] } : x));
                       e.target.value = '';
                     }
                   }} 
@@ -540,9 +627,11 @@ function DoctorsSection() {
               <input 
                 type="file" 
                 accept="image/*,video/*" 
+                multiple
                 onChange={e => {
-                  if (e.target.files?.[0]) {
-                    setDoctorFiles(prev => [...prev, e.target.files![0]]);
+                  if (e.target.files && e.target.files.length > 0) {
+                    const newFiles = Array.from(e.target.files);
+                    setDoctorFiles(prev => [...prev, ...newFiles]);
                     e.target.value = '';
                   }
                 }} 
@@ -677,9 +766,11 @@ function NewsSection() {
               <input 
                 type="file" 
                 accept="image/*,video/*" 
+                multiple
                 onChange={e => {
-                  if (e.target.files?.[0]) {
-                    setFiles(prev => [...prev, e.target.files![0]]);
+                  if (e.target.files && e.target.files.length > 0) {
+                    const newFiles = Array.from(e.target.files);
+                    setFiles(prev => [...prev, ...newFiles]);
                     e.target.value = '';
                   }
                 }} 
@@ -771,9 +862,11 @@ function GalleryAdminSection() {
               <input 
                 type="file" 
                 accept="image/*,video/*" 
+                multiple
                 onChange={e => {
-                  if (e.target.files?.[0]) {
-                    setFiles(prev => [...prev, e.target.files![0]]);
+                  if (e.target.files && e.target.files.length > 0) {
+                    const newFiles = Array.from(e.target.files);
+                    setFiles(prev => [...prev, ...newFiles]);
                     e.target.value = '';
                   }
                 }} 
@@ -944,9 +1037,11 @@ function ReceptionsSection() {
               <input 
                 type="file" 
                 accept="image/*" 
+                multiple
                 onChange={e => {
-                  if (e.target.files?.[0]) {
-                    setFiles(prev => [...prev, e.target.files![0]]);
+                  if (e.target.files && e.target.files.length > 0) {
+                    const newFiles = Array.from(e.target.files);
+                    setFiles(prev => [...prev, ...newFiles]);
                     e.target.value = '';
                   }
                 }} 

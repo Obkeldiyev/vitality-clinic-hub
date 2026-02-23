@@ -123,9 +123,9 @@ export default function NewsPage() {
       {selectedNews && (
         <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4" onClick={() => { setSelectedNews(null); setCurrentMediaIndex(0); }}>
           <div className="bg-card rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <div className="sticky top-0 bg-card border-b border-border p-4 flex items-center justify-between z-10">
-              <h2 className="font-display font-bold text-xl text-primary">{getTitle(selectedNews)}</h2>
-              <button onClick={() => { setSelectedNews(null); setCurrentMediaIndex(0); }} className="text-muted-foreground hover:text-foreground">
+            <div className="sticky top-0 bg-card border-b border-border p-6 flex items-center justify-between z-10">
+              <h2 className="font-display font-bold text-3xl text-primary pr-4">{getTitle(selectedNews)}</h2>
+              <button onClick={() => { setSelectedNews(null); setCurrentMediaIndex(0); }} className="text-muted-foreground hover:text-foreground flex-shrink-0">
                 <X className="w-6 h-6" />
               </button>
             </div>
@@ -204,19 +204,8 @@ export default function NewsPage() {
               )}
               
               {/* Description */}
-              <div className="space-y-4">
-                <div>
-                  <p className="text-sm font-semibold text-primary mb-1">RU:</p>
-                  <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{selectedNews.description_ru}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-primary mb-1">EN:</p>
-                  <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{selectedNews.description_en}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-primary mb-1">UZ:</p>
-                  <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{selectedNews.description_uz}</p>
-                </div>
+              <div>
+                <p className="text-foreground text-lg leading-relaxed whitespace-pre-wrap">{getDescription(selectedNews)}</p>
               </div>
             </div>
           </div>

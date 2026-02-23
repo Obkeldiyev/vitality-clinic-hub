@@ -49,7 +49,7 @@ export default function DoctorsPage() {
           ) : doctors.length > 0 ? (
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {doctors.map((doc: any) => {
-                const img = doc.media?.find((m: any) => m.type?.includes("image"));
+                const img = doc.media?.find((m: any) => m.type?.toUpperCase().includes("IMAGE"));
                 return (
                   <div
                     key={doc.id}
@@ -105,45 +105,94 @@ export default function DoctorsPage() {
       </div>
 
       {selectedDoctor && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4" onClick={() => setSelectedDoctor(null)}>
-          <div className="bg-card rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <div className="sticky top-0 bg-card border-b border-border p-4 flex items-center justify-between">
-              <h2 className="font-display font-bold text-xl text-primary">
-                {selectedDoctor.first_name} {selectedDoctor.second_name}
-              </h2>
-              <button onClick={() => setSelectedDoctor(null)} className="text-muted-foreground hover:text-foreground">
+        <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4" onClick={() => setSelectedDoctor(null)}>
+          <div className="bg-card rounded-2xl max-w-4xl w-full max-h-[95vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="sticky top-0 bg-card/95 backdrop-blur-sm border-b border-border p-6 flex items-center justify-between z-10">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Stethoscope className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h2 className="font-display font-bold text-2xl text-primary">
+                    {selectedDoctor.first_name} {selectedDoctor.second_name}
+                  </h2>
+                  {selectedDoctor.third_name && (
+                    <p className="text-sm text-muted-foreground">{selectedDoctor.third_name}</p>
+                  )}
+                </div>
+              </div>
+              <button onClick={() => setSelectedDoctor(null)} className="text-muted-foreground hover:text-foreground flex-shrink-0 transition-colors">
                 <X className="w-6 h-6" />
               </button>
             </div>
             
-            <div className="p-6">
-              <div className="flex gap-6 mb-6">
-                {selectedDoctor.media?.find((m: any) => m.type?.includes("image")) && (
-                  <img
-                    src={getMediaUrl(selectedDoctor.media.find((m: any) => m.type?.includes("image")).url)}
-                    alt={`${selectedDoctor.first_name} ${selectedDoctor.second_name}`}
-                    className="w-32 h-32 rounded-xl object-cover"
-                  />
-                )}
-                <div className="flex-1">
-                  <h3 className="font-semibold text-lg text-primary mb-2">
-                    {selectedDoctor.first_name} {selectedDoctor.second_name} {selectedDoctor.third_name}
-                  </h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed">{selectedDoctor.description}</p>
+            <div className="p-6 space-y-8">
+              {/* Doctor Photo - Full Size */}
+              {selectedDoctor.media?.find((m: any) => m.type?.toUpperCase().includes("IMAGE")) && (
+                <div className="relative">
+                  <div className="aspect-[21/9] rounded-2xl overflow-hidden bg-black">
+                    <img
+                      src={getMediaUrl(selectedDoctor.media.find((m: any) => m.type?.toUpperCase().includes("IMAGE")).url)}
+                      alt={`${selectedDoctor.first_name} ${selectedDoctor.second_name}`}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
                 </div>
+              )}
+
+              {/* Description */}
+              <div>
+                <h3 className="text-lg font-semibold text-primary mb-3 flex items-center gap-2">
+                  <Stethoscope className="w-5 h-5" />
+                  {t('doctors.specialization')}
+                </h3>
+                <p className="text-foreground text-lg leading-relaxed">{selectedDoctor.description}</p>
               </div>
 
-              {selectedDoctor.awards?.length > 0 && (
+              {/* Branch Info */}
+              {selectedDoctor.branch && (
+                <div className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 rounded-xl p-5 border border-blue-500/20">
+                  <h3 className="text-base font-semibold text-primary mb-2">{t('admin.branch')}</h3>
+                  <p className="text-foreground text-lg">{selectedDoctor.branch.title}</p>
+                  {selectedDoctor.branch.description && (
+                    <p className="text-sm text-muted-foreground mt-2">{selectedDoctor.branch.description}</p>
+                  )}
+                </div>
+              )}
+
+              {/* Awards Section */}
+              {selectedDoctor.awards && selectedDoctor.awards.length > 0 && (
                 <div>
-                  <h4 className="font-semibold text-primary mb-3 flex items-center gap-2">
+                  <h3 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
                     <Award className="w-5 h-5 text-clinic-red" />
-                    {t('doctors.awards')}
-                  </h4>
-                  <div className="space-y-3">
+                    {t('doctors.awards')} ({selectedDoctor.awards.length})
+                  </h3>
+                  <div className="grid sm:grid-cols-2 gap-4">
                     {selectedDoctor.awards.map((award: any) => (
-                      <div key={award.id} className="bg-muted rounded-xl p-4">
-                        <h5 className="font-semibold text-sm text-primary mb-1">{award.title}</h5>
-                        <p className="text-xs text-muted-foreground">{award.level}</p>
+                      <div key={award.id} className="bg-gradient-to-br from-yellow-500/10 to-yellow-600/5 rounded-xl p-5 border border-yellow-500/20">
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-yellow-500/20 flex items-center justify-center flex-shrink-0">
+                            <Award className="w-5 h-5 text-yellow-600" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-base text-primary mb-1">{award.title}</h4>
+                            <p className="text-sm text-muted-foreground">{award.level}</p>
+                          </div>
+                        </div>
+                        {/* Award Media */}
+                        {award.media && award.media.length > 0 && (
+                          <div className="mt-3 grid grid-cols-2 gap-2">
+                            {award.media.map((media: any) => (
+                              <div key={media.id} className="aspect-square rounded-lg overflow-hidden bg-muted">
+                                <img 
+                                  src={getMediaUrl(media.url)} 
+                                  alt={award.title} 
+                                  className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
