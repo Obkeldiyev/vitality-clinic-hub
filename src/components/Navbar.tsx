@@ -51,12 +51,18 @@ export default function Navbar() {
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "glass-dark shadow-lg py-2" : "bg-transparent py-4"
+        scrolled ? "glass-dark shadow-lg py-2" : "bg-transparent py-3"
       }`}
     >
-      <div className="container mx-auto flex items-center justify-between">
-        <Link to="/" className="flex items-center">
-          <img src={logo} alt="ASL Medline" className="h-20 w-auto object-contain" />
+      <div className="container mx-auto px-4 flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-3">
+          <img src={logo} alt="ASL Medline" className={`transition-all duration-300 ${scrolled ? 'h-12' : 'h-16'} w-auto object-contain`} />
+          <div className="hidden md:block">
+            <p className="text-white/60 text-xs uppercase tracking-widest font-medium">{t('hero.title')}</p>
+            <p className="text-white font-display font-black text-lg tracking-tight">
+              <span className="text-clinic-red">MEDLINE</span> {t('hero.subtitle')}
+            </p>
+          </div>
         </Link>
 
         {/* Desktop nav */}
@@ -66,7 +72,7 @@ export default function Navbar() {
               <Link
                 to={item.href}
                 onClick={() => handleClick(item.href)}
-                className="nav-link text-white/90 hover:text-white text-sm font-medium tracking-wide"
+                className="nav-link text-white/90 hover:text-white text-sm font-medium tracking-wide transition-colors"
               >
                 {item.label}
               </Link>
@@ -79,9 +85,9 @@ export default function Navbar() {
           {phone && (
             <a
               href={`tel:${phone}`}
-              className="flex items-center gap-2 text-white/90 hover:text-white text-sm font-medium"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg glass border border-white/10 text-white/90 hover:text-white text-sm font-medium transition-colors"
             >
-              <Phone className="w-4 h-4 text-clinic-red" />
+              <Phone className="w-3.5 h-3.5 text-clinic-red" />
               {phone}
             </a>
           )}
@@ -89,7 +95,7 @@ export default function Navbar() {
             to="/admin/login"
             className="px-4 py-2 rounded-lg text-xs font-semibold border border-white/20 text-white/80 hover:bg-white/10 transition-colors"
           >
-            Войти
+            {t('footer.admin')}
           </Link>
         </div>
 
@@ -117,6 +123,17 @@ export default function Navbar() {
                 </Link>
               </li>
             ))}
+            {phone && (
+              <li className="pt-2 border-t border-white/10 mt-2">
+                <a
+                  href={`tel:${phone}`}
+                  className="flex items-center gap-2 py-3 px-4 text-white/90 hover:text-white hover:bg-white/10 rounded-lg transition-colors text-sm font-medium"
+                >
+                  <Phone className="w-4 h-4 text-clinic-red" />
+                  {phone}
+                </a>
+              </li>
+            )}
             <li className="pt-2 border-t border-white/10 mt-2">
               <div className="px-4 py-2">
                 <LanguageSwitcher />
@@ -128,7 +145,7 @@ export default function Navbar() {
                 className="flex-1 text-center py-2.5 rounded-lg text-sm font-semibold border border-white/20 text-white hover:bg-white/10 transition-colors"
                 onClick={() => setOpen(false)}
               >
-                Войти
+                {t('footer.admin')}
               </Link>
             </li>
           </ul>
