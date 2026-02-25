@@ -58,7 +58,9 @@ async function request<T>(
   if (auth) {
     const token = getToken();
     if (token) {
+      // Use both custom header and standard Authorization header for compatibility
       headers["access_token"] = token;
+      headers["Authorization"] = `Bearer ${token}`;
     } else {
       console.warn("Auth required but no token found");
     }

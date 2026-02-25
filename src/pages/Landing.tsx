@@ -23,16 +23,51 @@ function HeroSection({ aboutUs }: { aboutUs: any[] }) {
   const { t } = useTranslation();
   const info = aboutUs[0];
   return (
-    <section id="hero" className="relative min-h-screen flex items-center justify-center z-10 py-20">
-      {/* Medical cross pattern overlay */}
-      <div className="absolute inset-0 opacity-5 pointer-events-none">
-        <div className="absolute top-20 left-10 text-white text-9xl">+</div>
-        <div className="absolute top-40 right-20 text-white text-7xl">+</div>
-        <div className="absolute bottom-40 left-1/4 text-white text-6xl">+</div>
-        <div className="absolute bottom-20 right-1/3 text-white text-8xl">+</div>
+    <section id="hero" className="relative min-h-screen flex items-center justify-center z-10 py-20 overflow-hidden">
+      {/* Medical themed background with patterns */}
+      <div className="absolute inset-0 opacity-10 pointer-events-none">
+        {/* DNA helix pattern */}
+        <div className="absolute top-0 left-0 w-full h-full" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          backgroundSize: '60px 60px'
+        }} />
+        
+        {/* Heartbeat line pattern */}
+        <div className="absolute top-1/4 left-0 w-full h-32 opacity-20" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='200' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 20 L40 20 L50 5 L60 35 L70 20 L200 20' stroke='%23ff0000' stroke-width='2' fill='none'/%3E%3C/svg%3E")`,
+          backgroundRepeat: 'repeat-x',
+          backgroundSize: '200px 40px'
+        }} />
+        
+        {/* Medical cross grid */}
+        <div className="absolute inset-0" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' opacity='0.1'%3E%3Crect x='45' y='20' width='10' height='60'/%3E%3Crect x='20' y='45' width='60' height='10'/%3E%3C/g%3E%3C/svg%3E")`,
+          backgroundSize: '100px 100px'
+        }} />
+        
+        {/* Stethoscope icons scattered */}
+        <div className="absolute top-20 right-20 text-white/5 text-9xl">🩺</div>
+        <div className="absolute bottom-40 left-20 text-white/5 text-7xl">💊</div>
+        <div className="absolute top-1/2 right-1/4 text-white/5 text-6xl">🏥</div>
+        <div className="absolute bottom-20 right-1/3 text-white/5 text-8xl">⚕️</div>
       </div>
 
-      <div className="container mx-auto text-center px-4 pt-20 pb-12">
+      {/* Glowing medical orbs */}
+      <div className="absolute inset-0 opacity-20 pointer-events-none">
+        <div className="absolute top-10 left-10 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }} />
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '6s' }} />
+        <div className="absolute top-1/2 left-1/3 w-48 h-48 bg-clinic-red/20 rounded-full blur-2xl animate-pulse" style={{ animationDuration: '5s' }} />
+      </div>
+
+      {/* Medical cross pattern overlay */}
+      <div className="absolute inset-0 opacity-5 pointer-events-none">
+        <div className="absolute top-20 left-10 text-white text-9xl font-bold">+</div>
+        <div className="absolute top-40 right-20 text-white text-7xl font-bold">+</div>
+        <div className="absolute bottom-40 left-1/4 text-white text-6xl font-bold">+</div>
+        <div className="absolute bottom-20 right-1/3 text-white text-8xl font-bold">+</div>
+      </div>
+
+      <div className="container mx-auto text-center px-4 pt-20 pb-12 relative z-10">
         {/* Medical badge with heartbeat */}
         <div className="inline-flex items-center gap-3 glass rounded-full px-5 py-2 mb-4 animate-fade-in border border-white/10">
           <div className="relative">
@@ -57,7 +92,7 @@ function HeroSection({ aboutUs }: { aboutUs: any[] }) {
 
         {/* Main headline */}
         <h1 className="font-display font-bold text-3xl sm:text-4xl lg:text-5xl text-white mb-4 leading-tight animate-fade-in max-w-3xl mx-auto" style={{ animationDelay: "0.1s" }}>
-          {t('hero.mainHeadline') || 'Профессиональная медицинская помощь для вас и вашей семьи'}
+          {t('hero.mainHeadline')}
         </h1>
 
         <p className="text-white/75 text-sm sm:text-base max-w-2xl mx-auto mb-6 leading-relaxed animate-fade-in" style={{ animationDelay: "0.2s" }}>
@@ -86,10 +121,10 @@ function HeroSection({ aboutUs }: { aboutUs: any[] }) {
         {/* Medical features grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto mb-6 animate-fade-in" style={{ animationDelay: "0.4s" }}>
           {[
-            { icon: Stethoscope, label: t('hero.diagnostics'), desc: t('hero.diagnosticsDesc') || 'Современное оборудование' },
-            { icon: Users, label: t('hero.specialists'), desc: t('hero.specialistsDesc') || 'Опытные врачи' },
-            { icon: Award, label: t('hero.certificates'), desc: t('hero.certificatesDesc') || 'Международные стандарты' },
-            { icon: Clock, label: t('hero.support'), desc: t('hero.supportDesc') || 'Круглосуточно' },
+            { icon: Stethoscope, label: t('hero.diagnostics'), desc: t('hero.diagnosticsDesc') },
+            { icon: Users, label: t('hero.specialists'), desc: t('hero.specialistsDesc') },
+            { icon: Award, label: t('hero.certificates'), desc: t('hero.certificatesDesc') },
+            { icon: Clock, label: t('hero.support'), desc: t('hero.supportDesc') },
           ].map(({ icon: Icon, label, desc }) => (
             <div key={label} className="glass rounded-xl p-3 flex flex-col items-center text-center border border-white/10 hover:bg-white/10 transition-all duration-300 group">
               <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-2 transition-transform group-hover:scale-110" style={{ background: "hsl(var(--clinic-red))" }}>
@@ -104,15 +139,15 @@ function HeroSection({ aboutUs }: { aboutUs: any[] }) {
         {/* Trust indicators */}
         <div className="flex flex-wrap items-center justify-center gap-4 animate-fade-in" style={{ animationDelay: "0.5s" }}>
           <div className="glass rounded-lg px-4 py-2 border border-white/10">
-            <p className="text-white/60 text-xs">{t('hero.experience') || 'Опыт работы'}</p>
-            <p className="text-white font-bold text-base">15+ {t('hero.years') || 'лет'}</p>
+            <p className="text-white/60 text-xs">{t('hero.experience')}</p>
+            <p className="text-white font-bold text-base">15+ {t('hero.years')}</p>
           </div>
           <div className="glass rounded-lg px-4 py-2 border border-white/10">
-            <p className="text-white/60 text-xs">{t('hero.patients') || 'Пациентов'}</p>
+            <p className="text-white/60 text-xs">{t('hero.patients')}</p>
             <p className="text-white font-bold text-base">50,000+</p>
           </div>
           <div className="glass rounded-lg px-4 py-2 border border-white/10">
-            <p className="text-white/60 text-xs">{t('hero.doctors') || 'Врачей'}</p>
+            <p className="text-white/60 text-xs">{t('hero.doctors')}</p>
             <p className="text-white font-bold text-base">100+</p>
           </div>
         </div>
@@ -253,54 +288,72 @@ function BranchesSection({ branches }: { branches: any[] }) {
 // ── Doctors ────────────────────────────────────────────────────────────
 function DoctorsSection({ doctors }: { doctors: any[] }) {
   const { t } = useTranslation();
+  const [isPaused, setIsPaused] = useState(false);
+  
+  // Duplicate doctors for infinite scroll effect
+  const displayDoctors = doctors.length > 0 ? [...doctors, ...doctors, ...doctors] : [];
+  
   return (
-    <section id="doctors" className="py-24 bg-secondary/30 relative z-10">
+    <section id="doctors" className="py-24 bg-secondary/30 relative z-10 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="text-center mb-14">
           <SectionLabel>{t('doctors.label')}</SectionLabel>
           <SectionTitle>{t('doctors.title')}</SectionTitle>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {doctors.slice(0, 4).map((doc: any) => {
-            const img = doc.media?.find((m: any) => m.type?.includes("image") || m.type?.toUpperCase().includes("IMAGE"));
-            return (
-              <div key={doc.id} className="group bg-card rounded-2xl overflow-hidden shadow-card hover:shadow-hover transition-all duration-300 border border-border text-center hover:-translate-y-1">
-                <div className="h-56 overflow-hidden bg-muted">
-                  {img ? (
-                    <img
-                      src={getMediaUrl(img.url)}
-                      alt={`${doc.first_name} ${doc.second_name}`}
-                      className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center" style={{ background: "hsl(var(--primary)/0.06)" }}>
-                      <Stethoscope className="w-14 h-14 text-primary/25" />
+        
+        {doctors.length > 0 ? (
+          <div className="relative">
+            <div 
+              className="flex gap-6 animate-scroll"
+              style={{ 
+                animationPlayState: isPaused ? 'paused' : 'running',
+                width: 'fit-content'
+              }}
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
+            >
+              {displayDoctors.map((doc: any, idx: number) => {
+                const img = doc.media?.find((m: any) => m.type?.includes("image") || m.type?.toUpperCase().includes("IMAGE"));
+                return (
+                  <div key={`${doc.id}-${idx}`} className="group bg-card rounded-2xl overflow-hidden shadow-card hover:shadow-hover transition-all duration-300 border border-border text-center hover:-translate-y-1 flex-shrink-0 w-64">
+                    <div className="h-80 overflow-hidden bg-muted">
+                      {img ? (
+                        <img
+                          src={getMediaUrl(img.url)}
+                          alt={`${doc.first_name} ${doc.second_name}`}
+                          className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center" style={{ background: "hsl(var(--primary)/0.06)" }}>
+                          <Stethoscope className="w-14 h-14 text-primary/25" />
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-                <div className="p-5">
-                  <h3 className="font-display font-bold text-primary text-base mb-1">
-                    {doc.first_name} {doc.second_name}
-                  </h3>
-                  {doc.third_name && <p className="text-xs text-muted-foreground mb-2">{doc.third_name}</p>}
-                  <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">{doc.description}</p>
-                  {doc.awards?.length > 0 && (
-                    <div className="mt-3 flex items-center justify-center gap-1">
-                      <Award className="w-3.5 h-3.5 text-clinic-red" />
-                      <span className="text-xs text-clinic-red font-medium">{doc.awards.length} {t('doctors.awards')}</span>
+                    <div className="p-5">
+                      <h3 className="font-display font-bold text-primary text-base mb-1">
+                        {doc.first_name} {doc.second_name}
+                      </h3>
+                      {doc.third_name && <p className="text-xs text-muted-foreground mb-2">{doc.third_name}</p>}
+                      <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">{doc.description}</p>
+                      {doc.awards?.length > 0 && (
+                        <div className="mt-3 flex items-center justify-center gap-1">
+                          <Award className="w-3.5 h-3.5 text-clinic-red" />
+                          <span className="text-xs text-clinic-red font-medium">{doc.awards.length} {t('doctors.awards')}</span>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-          {!doctors.length && (
-            <div className="col-span-4 text-center py-20 text-muted-foreground">
-              <Stethoscope className="w-12 h-12 mx-auto mb-3 opacity-30" />
-              <p>{t('doctors.loading')}</p>
+                  </div>
+                );
+              })}
             </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="text-center py-20 text-muted-foreground">
+            <Stethoscope className="w-12 h-12 mx-auto mb-3 opacity-30" />
+            <p>{t('doctors.loading')}</p>
+          </div>
+        )}
+        
         {doctors.length > 4 && (
           <div className="text-center mt-10">
             <Link
@@ -313,6 +366,20 @@ function DoctorsSection({ doctors }: { doctors: any[] }) {
           </div>
         )}
       </div>
+      
+      <style>{`
+        @keyframes scroll {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(calc(-100% / 3));
+          }
+        }
+        .animate-scroll {
+          animation: scroll 30s linear infinite;
+        }
+      `}</style>
     </section>
   );
 }
@@ -372,62 +439,80 @@ function ServicesSection({ branches }: { branches: any[] }) {
 // ── News ───────────────────────────────────────────────────────────────
 function NewsSection({ news }: { news: any[] }) {
   const { t } = useTranslation();
+  const [isPaused, setIsPaused] = useState(false);
   
   console.log("NewsSection rendering with news:", news);
   console.log("NewsSection news count:", news.length);
   
+  // Duplicate news for infinite scroll effect
+  const displayNews = news.length > 0 ? [...news, ...news, ...news] : [];
+  
   return (
-    <section id="news" className="py-24 bg-secondary/30 relative z-10">
+    <section id="news" className="py-24 bg-secondary/30 relative z-10 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="text-center mb-14">
           <SectionLabel>{t('news.label')}</SectionLabel>
           <SectionTitle>{t('news.title')}</SectionTitle>
         </div>
-        <div className="grid md:grid-cols-3 gap-7">
-          {news.slice(0, 3).map((item: any) => {
-            console.log("NewsSection - Rendering item:", item.id, item);
-            console.log("NewsSection - Item media:", item.media);
-            const img = item.media?.find((m: any) => m.type?.includes("image") || m.type?.toUpperCase().includes("IMAGE"));
-            console.log("NewsSection - Found image:", img);
-            if (img) {
-              console.log("NewsSection - Image URL:", img.url);
-              console.log("NewsSection - Full media URL:", getMediaUrl(img.url));
-            }
-            return (
-              <div key={item.id} className="group bg-card rounded-2xl overflow-hidden shadow-card hover:shadow-hover transition-all duration-300 border border-border hover:-translate-y-1">
-                <div className="h-48 overflow-hidden bg-muted">
-                  {img ? (
-                    <img
-                      src={getMediaUrl(img.url)}
-                      alt={getTitle(item)}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      onError={(e) => console.error("NewsSection - Image failed to load:", img.url, e)}
-                      onLoad={() => console.log("NewsSection - Image loaded successfully:", img.url)}
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center" style={{ background: "hsl(var(--primary)/0.06)" }}>
-                      <Newspaper className="w-12 h-12 text-primary/25" />
+        
+        {news.length > 0 ? (
+          <div className="relative">
+            <div 
+              className="flex gap-6 animate-scroll-news"
+              style={{ 
+                animationPlayState: isPaused ? 'paused' : 'running',
+                width: 'fit-content'
+              }}
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
+            >
+              {displayNews.map((item: any, idx: number) => {
+                console.log("NewsSection - Rendering item:", item.id, item);
+                console.log("NewsSection - Item media:", item.media);
+                const img = item.media?.find((m: any) => m.type?.includes("image") || m.type?.toUpperCase().includes("IMAGE"));
+                console.log("NewsSection - Found image:", img);
+                if (img) {
+                  console.log("NewsSection - Image URL:", img.url);
+                  console.log("NewsSection - Full media URL:", getMediaUrl(img.url));
+                }
+                return (
+                  <div key={`${item.id}-${idx}`} className="group bg-card rounded-2xl overflow-hidden shadow-card hover:shadow-hover transition-all duration-300 border border-border hover:-translate-y-1 flex-shrink-0 w-72">
+                    {/* Instagram-style 4:5 aspect ratio */}
+                    <div className="relative overflow-hidden bg-muted" style={{ aspectRatio: '4/5' }}>
+                      {img ? (
+                        <img
+                          src={getMediaUrl(img.url)}
+                          alt={getTitle(item)}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          onError={(e) => console.error("NewsSection - Image failed to load:", img.url, e)}
+                          onLoad={() => console.log("NewsSection - Image loaded successfully:", img.url)}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center" style={{ background: "hsl(var(--primary)/0.06)" }}>
+                          <Newspaper className="w-12 h-12 text-primary/25" />
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-                <div className="p-6">
-                  <h3 className="font-display font-bold text-primary text-base mb-2 group-hover:text-clinic-red transition-colors line-clamp-2">
-                    {getTitle(item)}
-                  </h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3">
-                    {getDescription(item)}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-          {!news.length && (
-            <div className="col-span-3 text-center py-20 text-muted-foreground">
-              <Newspaper className="w-12 h-12 mx-auto mb-3 opacity-30" />
-              <p>{t('news.loading')}</p>
+                    <div className="p-5">
+                      <h3 className="font-display font-bold text-primary text-sm mb-2 group-hover:text-clinic-red transition-colors line-clamp-2">
+                        {getTitle(item)}
+                      </h3>
+                      <p className="text-muted-foreground text-xs leading-relaxed line-clamp-3">
+                        {getDescription(item)}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="text-center py-20 text-muted-foreground">
+            <Newspaper className="w-12 h-12 mx-auto mb-3 opacity-30" />
+            <p>{t('news.loading')}</p>
+          </div>
+        )}
+        
         {news.length > 3 && (
           <div className="text-center mt-10">
             <Link
@@ -440,6 +525,20 @@ function NewsSection({ news }: { news: any[] }) {
           </div>
         )}
       </div>
+      
+      <style>{`
+        @keyframes scroll-news {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(calc(-100% / 3));
+          }
+        }
+        .animate-scroll-news {
+          animation: scroll-news 40s linear infinite;
+        }
+      `}</style>
     </section>
   );
 }

@@ -23,14 +23,21 @@ i18n
         translation: { ...uz, ...adminUz }
       },
     },
-    fallbackLng: 'ru',
+    fallbackLng: 'uz',
+    lng: 'uz', // Set default language to Uzbek
     interpolation: {
       escapeValue: false,
     },
     detection: {
       order: ['localStorage', 'navigator'],
       caches: ['localStorage'],
+      lookupLocalStorage: 'i18nextLng',
     },
   });
+
+// Set Uzbek as default if no language is stored
+if (!localStorage.getItem('i18nextLng')) {
+  i18n.changeLanguage('uz');
+}
 
 export default i18n;
