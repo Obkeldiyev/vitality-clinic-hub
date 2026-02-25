@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:9007";
+const BASE_URL = "/api";
 
 export function getToken(): string | null {
   return localStorage.getItem("clinic_token");
