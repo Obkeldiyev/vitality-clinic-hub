@@ -12,15 +12,24 @@
   },
   "hero": {
     "badge": "Siz uchun zamonaviy tibbiyot",
-    "title": "ASL MEDLINE",
+    "title": "ASL",
     "subtitle": "Klinikasi",
+    "mainHeadline": "Siz va oilangiz uchun professional tibbiy yordam",
     "description": "Zamonaviy uskunalar va yuqori malakali mutaxassislar bilan ilg'or klinika. Sizning sog'ligingiz bizning ustuvorligimiz.",
     "bookAppointment": "Qabulga yozilish",
     "ourDepartments": "Bizning bo'limlar",
     "diagnostics": "Diagnostika",
+    "diagnosticsDesc": "Zamonaviy uskunalar",
     "specialists": "Mutaxassislar",
+    "specialistsDesc": "Tajribali shifokorlar",
     "certificates": "Sertifikatlar",
-    "support": "24/7 Qo'llab-quvvatlash"
+    "certificatesDesc": "Xalqaro standartlar",
+    "support": "24/7 Qo'llab-quvvatlash",
+    "supportDesc": "Doimo",
+    "experience": "Tajriba",
+    "years": "yil",
+    "patients": "Bemorlar",
+    "doctors": "Shifokorlar"
   },
   "stats": {
     "suffix": "+"

@@ -23,59 +23,105 @@ function HeroSection({ aboutUs }: { aboutUs: any[] }) {
   const { t } = useTranslation();
   const info = aboutUs[0];
   return (
-    <section id="hero" className="relative min-h-screen flex items-center justify-center z-10">
-      <div className="container mx-auto text-center px-4 pt-24 pb-16">
-        <div className="inline-flex items-center gap-2 glass rounded-full px-5 py-2.5 mb-8 animate-fade-in">
-          <Activity className="w-4 h-4 text-clinic-red animate-pulse" />
-          <span className="text-white/90 text-sm font-medium">{t('hero.badge')}</span>
+    <section id="hero" className="relative min-h-screen flex items-center justify-center z-10 py-20">
+      {/* Medical cross pattern overlay */}
+      <div className="absolute inset-0 opacity-5 pointer-events-none">
+        <div className="absolute top-20 left-10 text-white text-9xl">+</div>
+        <div className="absolute top-40 right-20 text-white text-7xl">+</div>
+        <div className="absolute bottom-40 left-1/4 text-white text-6xl">+</div>
+        <div className="absolute bottom-20 right-1/3 text-white text-8xl">+</div>
+      </div>
+
+      <div className="container mx-auto text-center px-4 pt-20 pb-12">
+        {/* Medical badge with heartbeat */}
+        <div className="inline-flex items-center gap-3 glass rounded-full px-5 py-2 mb-4 animate-fade-in border border-white/10">
+          <div className="relative">
+            <Activity className="w-4 h-4 text-clinic-red animate-pulse" />
+            <div className="absolute inset-0 bg-clinic-red/20 rounded-full animate-ping" />
+          </div>
+          <span className="text-white/90 text-sm font-semibold tracking-wide">{t('hero.badge')}</span>
         </div>
 
-        <h1 className="font-display font-black text-5xl sm:text-6xl lg:text-7xl text-white mb-6 leading-tight animate-fade-in" style={{ animationDelay: "0.1s" }}>
-          {t('hero.title')} <span className="text-clinic-red">MEDLINE</span>
-          <br />
-          <span className="text-white/80 text-3xl sm:text-4xl lg:text-5xl font-bold">{t('hero.subtitle')}</span>
+        {/* Medical symbol with clinic name */}
+        <div className="flex items-center justify-center gap-3 mb-4 animate-fade-in" style={{ animationDelay: "0.05s" }}>
+          <div className="w-12 h-12 rounded-xl glass flex items-center justify-center border border-white/10">
+            <Stethoscope className="w-6 h-6 text-clinic-red" />
+          </div>
+          <div className="text-left">
+            <p className="text-white/60 text-xs uppercase tracking-widest font-medium">{t('hero.title')}</p>
+            <h2 className="text-white font-display font-black text-xl tracking-tight">
+              <span className="text-clinic-red">MEDLINE</span> {t('hero.subtitle')}
+            </h2>
+          </div>
+        </div>
+
+        {/* Main headline */}
+        <h1 className="font-display font-bold text-3xl sm:text-4xl lg:text-5xl text-white mb-4 leading-tight animate-fade-in max-w-3xl mx-auto" style={{ animationDelay: "0.1s" }}>
+          {t('hero.mainHeadline') || 'Профессиональная медицинская помощь для вас и вашей семьи'}
         </h1>
 
-        <p className="text-white/75 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed animate-fade-in" style={{ animationDelay: "0.2s" }}>
+        <p className="text-white/75 text-sm sm:text-base max-w-2xl mx-auto mb-6 leading-relaxed animate-fade-in" style={{ animationDelay: "0.2s" }}>
           {info ? getContent(info) : t('hero.description')}
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in" style={{ animationDelay: "0.3s" }}>
+        {/* CTA buttons */}
+        <div className="flex flex-col sm:flex-row gap-3 justify-center mb-8 animate-fade-in" style={{ animationDelay: "0.3s" }}>
           <button
             onClick={() => document.querySelector("#consultation")?.scrollIntoView({ behavior: "smooth" })}
-            className="px-8 py-4 rounded-xl font-semibold text-white text-base transition-all duration-300 hover:scale-105 hover:shadow-primary"
+            className="group px-6 py-3 rounded-xl font-semibold text-white text-sm transition-all duration-300 hover:scale-105 hover:shadow-2xl shadow-lg flex items-center justify-center gap-2"
             style={{ background: "hsl(var(--clinic-red))" }}
           >
+            <Phone className="w-4 h-4" />
             {t('hero.bookAppointment')}
           </button>
           <button
             onClick={() => document.querySelector("#branches")?.scrollIntoView({ behavior: "smooth" })}
-            className="px-8 py-4 rounded-xl font-semibold text-white text-base glass hover:bg-white/20 transition-all duration-300"
+            className="px-6 py-3 rounded-xl font-semibold text-white text-sm glass hover:bg-white/20 transition-all duration-300 border border-white/10 flex items-center justify-center gap-2"
           >
+            <Building2 className="w-4 h-4" />
             {t('hero.ourDepartments')}
           </button>
         </div>
 
-        {/* Floating cards */}
-        <div className="flex flex-wrap justify-center gap-4 mt-16 animate-fade-in" style={{ animationDelay: "0.5s" }}>
+        {/* Medical features grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto mb-6 animate-fade-in" style={{ animationDelay: "0.4s" }}>
           {[
-            { icon: Stethoscope, label: t('hero.diagnostics') },
-            { icon: Users, label: t('hero.specialists') },
-            { icon: Award, label: t('hero.certificates') },
-            { icon: Clock, label: t('hero.support') },
-          ].map(({ icon: Icon, label }) => (
-            <div key={label} className="glass rounded-xl px-5 py-3 flex items-center gap-2">
-              <Icon className="w-4 h-4 text-clinic-red" />
-              <span className="text-white/90 text-sm font-medium">{label}</span>
+            { icon: Stethoscope, label: t('hero.diagnostics'), desc: t('hero.diagnosticsDesc') || 'Современное оборудование' },
+            { icon: Users, label: t('hero.specialists'), desc: t('hero.specialistsDesc') || 'Опытные врачи' },
+            { icon: Award, label: t('hero.certificates'), desc: t('hero.certificatesDesc') || 'Международные стандарты' },
+            { icon: Clock, label: t('hero.support'), desc: t('hero.supportDesc') || 'Круглосуточно' },
+          ].map(({ icon: Icon, label, desc }) => (
+            <div key={label} className="glass rounded-xl p-3 flex flex-col items-center text-center border border-white/10 hover:bg-white/10 transition-all duration-300 group">
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-2 transition-transform group-hover:scale-110" style={{ background: "hsl(var(--clinic-red))" }}>
+                <Icon className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-white font-semibold text-xs mb-0.5">{label}</span>
+              <span className="text-white/60 text-xs leading-tight">{desc}</span>
             </div>
           ))}
+        </div>
+
+        {/* Trust indicators */}
+        <div className="flex flex-wrap items-center justify-center gap-4 animate-fade-in" style={{ animationDelay: "0.5s" }}>
+          <div className="glass rounded-lg px-4 py-2 border border-white/10">
+            <p className="text-white/60 text-xs">{t('hero.experience') || 'Опыт работы'}</p>
+            <p className="text-white font-bold text-base">15+ {t('hero.years') || 'лет'}</p>
+          </div>
+          <div className="glass rounded-lg px-4 py-2 border border-white/10">
+            <p className="text-white/60 text-xs">{t('hero.patients') || 'Пациентов'}</p>
+            <p className="text-white font-bold text-base">50,000+</p>
+          </div>
+          <div className="glass rounded-lg px-4 py-2 border border-white/10">
+            <p className="text-white/60 text-xs">{t('hero.doctors') || 'Врачей'}</p>
+            <p className="text-white font-bold text-base">100+</p>
+          </div>
         </div>
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-        <div className="w-6 h-10 rounded-full border-2 border-white/30 flex items-start justify-center p-1">
-          <div className="w-1.5 h-3 rounded-full bg-white/60 animate-pulse" />
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
+        <div className="w-5 h-8 rounded-full border-2 border-white/30 flex items-start justify-center p-1">
+          <div className="w-1 h-2 rounded-full bg-white/60 animate-pulse" />
         </div>
       </div>
     </section>

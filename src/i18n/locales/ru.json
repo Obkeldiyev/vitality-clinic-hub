@@ -12,15 +12,24 @@
   },
   "hero": {
     "badge": "Современная медицина для вас",
-    "title": "ASL MEDLINE",
+    "title": "ASL",
     "subtitle": "Клиника",
+    "mainHeadline": "Профессиональная медицинская помощь для вас и вашей семьи",
     "description": "Передовая клиника с современным оборудованием и высококвалифицированными специалистами. Ваше здоровье — наш приоритет.",
     "bookAppointment": "Записаться на приём",
     "ourDepartments": "Наши отделения",
     "diagnostics": "Диагностика",
+    "diagnosticsDesc": "Современное оборудование",
     "specialists": "Специалисты",
+    "specialistsDesc": "Опытные врачи",
     "certificates": "Сертификаты",
-    "support": "24/7 Поддержка"
+    "certificatesDesc": "Международные стандарты",
+    "support": "24/7 Поддержка",
+    "supportDesc": "Круглосуточно",
+    "experience": "Опыт работы",
+    "years": "лет",
+    "patients": "Пациентов",
+    "doctors": "Врачей"
   },
   "stats": {
     "suffix": "+"

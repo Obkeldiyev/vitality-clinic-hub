@@ -12,15 +12,24 @@
   },
   "hero": {
     "badge": "Modern medicine for you",
-    "title": "ASL MEDLINE",
+    "title": "ASL",
     "subtitle": "Clinic",
+    "mainHeadline": "Professional Medical Care for You and Your Family",
     "description": "Advanced clinic with modern equipment and highly qualified specialists. Your health is our priority.",
     "bookAppointment": "Book Appointment",
     "ourDepartments": "Our Departments",
     "diagnostics": "Diagnostics",
+    "diagnosticsDesc": "Modern equipment",
     "specialists": "Specialists",
+    "specialistsDesc": "Experienced doctors",
     "certificates": "Certificates",
-    "support": "24/7 Support"
+    "certificatesDesc": "International standards",
+    "support": "24/7 Support",
+    "supportDesc": "Around the clock",
+    "experience": "Experience",
+    "years": "years",
+    "patients": "Patients",
+    "doctors": "Doctors"
   },
   "stats": {
     "suffix": "+"
