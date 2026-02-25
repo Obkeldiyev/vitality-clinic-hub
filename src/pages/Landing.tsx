@@ -238,7 +238,7 @@ function BranchesSection({ branches }: { branches: any[] }) {
         </div>
         
         {branches.length > 0 ? (
-          <div className="relative">
+          <div className="relative -mx-4 px-4 overflow-hidden">
             <div 
               className="flex gap-6 animate-scroll-branches"
               style={{ 
@@ -346,7 +346,7 @@ function DoctorsSection({ doctors }: { doctors: any[] }) {
         </div>
         
         {doctors.length > 0 ? (
-          <div className="relative">
+          <div className="relative -mx-4 px-4 overflow-hidden">
             <div 
               className="flex gap-6 animate-scroll"
               style={{ 
@@ -429,102 +429,6 @@ function DoctorsSection({ doctors }: { doctors: any[] }) {
   );
 }
 
-// ── Services ───────────────────────────────────────────────────────────
-function ServicesSection({ branches }: { branches: any[] }) {
-  const { t } = useTranslation();
-  const [isPaused, setIsPaused] = useState(false);
-  
-  const allServices = branches.flatMap((b: any) =>
-    (b.Services || []).map((s: any) => ({ ...s, branchTitle: b.title }))
-  );
-  
-  // Duplicate services for infinite scroll effect
-  const displayServices = allServices.length > 0 ? [...allServices, ...allServices, ...allServices] : [];
-
-  return (
-    <section id="services" className="py-24 bg-background relative z-10 overflow-hidden">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-14">
-          <SectionLabel>{t('services.label')}</SectionLabel>
-          <SectionTitle>{t('services.title')}</SectionTitle>
-        </div>
-        
-        {allServices.length > 0 ? (
-          <div className="relative">
-            <div 
-              className="flex gap-5 animate-scroll-services"
-              style={{ 
-                animationPlayState: isPaused ? 'paused' : 'running',
-                width: 'fit-content'
-              }}
-              onMouseEnter={() => setIsPaused(true)}
-              onMouseLeave={() => setIsPaused(false)}
-            >
-              {displayServices.map((svc: any, idx: number) => {
-                const img = svc.media?.find((m: any) => m.type?.includes("image") || m.type?.toUpperCase().includes("IMAGE"));
-                return (
-                  <div key={`${svc.id}-${idx}`} className="flex gap-4 bg-card rounded-2xl p-5 shadow-card hover:shadow-hover transition-all duration-300 border border-border group flex-shrink-0 w-80">
-                    <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0" style={{ background: "hsl(var(--primary)/0.08)" }}>
-                      {img ? (
-                        <img src={getMediaUrl(img.url)} alt={getTitle(svc)} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <Activity className="w-6 h-6 text-primary/40" />
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs text-muted-foreground mb-0.5">{svc.branchTitle}</p>
-                      <h4 className="font-semibold text-primary text-sm group-hover:text-clinic-red transition-colors leading-tight mb-1">
-                        {getTitle(svc)}
-                      </h4>
-                      <p className="text-clinic-red font-bold text-base">
-                        {svc.price?.toLocaleString()} <span className="text-xs font-normal text-muted-foreground">{t('services.currency')}</span>
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        ) : (
-          <div className="text-center py-20 text-muted-foreground">
-            <Activity className="w-12 h-12 mx-auto mb-3 opacity-30" />
-            <p>{t('services.loading')}</p>
-          </div>
-        )}
-        
-        {allServices.length > 0 && (
-          <div className="text-center mt-10">
-            <Link
-              to="/services"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-white transition-all hover:opacity-90 hover:scale-105 shadow-lg"
-              style={{ background: "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--clinic-red)) 100%)" }}
-            >
-              <Activity className="w-5 h-5" />
-              {t('common.seeMore')}
-            </Link>
-          </div>
-        )}
-      </div>
-      
-      <style>{`
-        @keyframes scroll-services {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(calc(-100% / 3));
-          }
-        }
-        .animate-scroll-services {
-          animation: scroll-services 45s linear infinite;
-        }
-      `}</style>
-    </section>
-  );
-}
-
 // ── News ───────────────────────────────────────────────────────────────
 function NewsSection({ news }: { news: any[] }) {
   const { t } = useTranslation();
@@ -545,7 +449,7 @@ function NewsSection({ news }: { news: any[] }) {
         </div>
         
         {news.length > 0 ? (
-          <div className="relative">
+          <div className="relative -mx-4 px-4 overflow-hidden">
             <div 
               className="flex gap-6 animate-scroll-news"
               style={{ 
@@ -658,7 +562,7 @@ function GallerySection({ gallery }: { gallery: any[] }) {
         </div>
         
         {allMedia.length > 0 ? (
-          <div className="relative">
+          <div className="relative -mx-4 px-4 overflow-hidden">
             <div 
               className="flex gap-4 animate-scroll-gallery"
               style={{ 
@@ -778,7 +682,7 @@ function FeedbackSection({ feedbacks }: { feedbacks: any[] }) {
         {/* Reviews Carousel */}
         {feedbacks.length > 0 && (
           <>
-            <div className="relative mb-16">
+            <div className="relative mb-16 -mx-4 px-4 overflow-hidden">
               <div 
                 className="flex gap-6 animate-scroll-feedback"
                 style={{ 
@@ -1031,7 +935,6 @@ export default function Landing() {
         <AboutSection aboutUs={data.aboutUs} />
         <BranchesSection branches={data.branches} />
         <DoctorsSection doctors={data.doctors} />
-        <ServicesSection branches={data.branches} />
         <GallerySection gallery={data.gallery} />
         <ConsultationSection />
         <FeedbackSection feedbacks={data.feedbacks} />
