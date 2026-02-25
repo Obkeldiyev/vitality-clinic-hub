@@ -43,14 +43,16 @@
     "title": "Ixtisoslashtirilgan markazlar",
     "equipment": "uskunalar",
     "loading": "Bo'limlar yuklanmoqda...",
-    "seeAll": "Barcha bo'limlar"
+    "seeAll": "Barcha bo'limlar",
+    "about": "Bu bo'lim haqida"
   },
   "doctors": {
     "label": "Bizning jamoa",
     "title": "Tajribali mutaxassislar",
     "awards": "mukofotlar",
     "loading": "Shifokorlar yuklanmoqda...",
-    "seeAll": "Barcha shifokorlar"
+    "seeAll": "Barcha shifokorlar",
+    "specialization": "Mutaxassislik"
   },
   "services": {
     "label": "Xizmatlar",

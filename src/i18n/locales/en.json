@@ -43,14 +43,16 @@
     "title": "Specialized Centers",
     "equipment": "equipment units",
     "loading": "Loading departments...",
-    "seeAll": "See All Departments"
+    "seeAll": "See All Departments",
+    "about": "About This Department"
   },
   "doctors": {
     "label": "Our Team",
     "title": "Experienced Specialists",
     "awards": "awards",
     "loading": "Loading doctors...",
-    "seeAll": "See All Doctors"
+    "seeAll": "See All Doctors",
+    "specialization": "Specialization"
   },
   "services": {
     "label": "Services",
