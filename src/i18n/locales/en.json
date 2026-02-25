@@ -114,5 +114,8 @@
     "rights": "All rights reserved.",
     "admin": "Administrator",
     "reception": "Reception"
+  },
+  "common": {
+    "seeMore": "See More"
   }
 }

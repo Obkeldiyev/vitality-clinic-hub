@@ -217,7 +217,18 @@ export function getMediaUrl(path: string | null | undefined): string {
     console.log("getMediaUrl: already full URL:", path);
     return path;
   }
-  const fullUrl = `${MEDIA_BASE}${path.startsWith("/") ? path : `/${path}`}`;
+  
+  // If path starts with /uploads/, use /api/uploads/ for the proxy
+  // Otherwise use BASE_URL
+  let fullUrl: string;
+  if (path.startsWith("/uploads/")) {
+    fullUrl = `/api${path}`;
+  } else if (path.startsWith("uploads/")) {
+    fullUrl = `/api/${path}`;
+  } else {
+    fullUrl = `${MEDIA_BASE}${path.startsWith("/") ? path : `/${path}`}`;
+  }
+  
   console.log("getMediaUrl: converting", path, "to", fullUrl);
   return fullUrl;
 }

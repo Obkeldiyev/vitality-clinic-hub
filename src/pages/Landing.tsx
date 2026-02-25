@@ -224,63 +224,107 @@ function AboutSection({ aboutUs }: { aboutUs: any[] }) {
 // ── Branches ───────────────────────────────────────────────────────────
 function BranchesSection({ branches }: { branches: any[] }) {
   const { t } = useTranslation();
+  const [isPaused, setIsPaused] = useState(false);
+  
+  // Duplicate branches for infinite scroll effect
+  const displayBranches = branches.length > 0 ? [...branches, ...branches, ...branches] : [];
+  
   return (
-    <section id="branches" className="py-24 bg-background relative z-10">
+    <section id="branches" className="py-24 bg-background relative z-10 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="text-center mb-14">
           <SectionLabel>{t('branches.label')}</SectionLabel>
           <SectionTitle>{t('branches.title')}</SectionTitle>
         </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-7">
-          {branches.slice(0, 3).map((branch: any) => {
-            const img = branch.media?.find((m: any) => m.type?.includes("image") || m.type?.toUpperCase().includes("IMAGE"));
-            return (
-              <div key={branch.id} className="group bg-card rounded-2xl overflow-hidden shadow-card hover:shadow-hover transition-all duration-300 border border-border hover:-translate-y-1">
-                <div className="h-48 overflow-hidden bg-muted">
-                  {img ? (
-                    <img
-                      src={getMediaUrl(img.url)}
-                      alt={branch.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center" style={{ background: "hsl(var(--primary) / 0.08)" }}>
-                      <Building2 className="w-14 h-14 text-primary/30" />
+        
+        {branches.length > 0 ? (
+          <div className="relative">
+            <div 
+              className="flex gap-6 animate-scroll-branches"
+              style={{ 
+                animationPlayState: isPaused ? 'paused' : 'running',
+                width: 'fit-content'
+              }}
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
+            >
+              {displayBranches.map((branch: any, idx: number) => {
+                const img = branch.media?.find((m: any) => m.type?.includes("image") || m.type?.toUpperCase().includes("IMAGE"));
+                return (
+                  <div key={`${branch.id}-${idx}`} className="group bg-card rounded-2xl overflow-hidden shadow-card hover:shadow-hover transition-all duration-300 border border-border hover:-translate-y-1 flex-shrink-0 w-80">
+                    <div className="h-48 overflow-hidden bg-muted">
+                      {img ? (
+                        <img
+                          src={getMediaUrl(img.url)}
+                          alt={branch.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center" style={{ background: "hsl(var(--primary) / 0.08)" }}>
+                          <Building2 className="w-14 h-14 text-primary/30" />
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-                <div className="p-6">
-                  <h3 className="font-display font-bold text-primary text-lg mb-2 group-hover:text-clinic-red transition-colors">{branch.title}</h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-3">{branch.description}</p>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {branch.Services?.slice(0, 3).map((svc: any) => (
-                      <span key={svc.id} className="text-xs px-2.5 py-1 rounded-full font-medium" style={{ background: "hsl(var(--primary)/0.08)", color: "hsl(var(--primary))" }}>
-                        {getTitle(svc)}
-                      </span>
-                    ))}
-                    {(branch.Services?.length || 0) > 3 && (
-                      <span className="text-xs px-2.5 py-1 rounded-full font-medium bg-muted text-muted-foreground">
-                        +{branch.Services.length - 3}
-                      </span>
-                    )}
+                    <div className="p-6">
+                      <h3 className="font-display font-bold text-primary text-lg mb-2 group-hover:text-clinic-red transition-colors">{branch.title}</h3>
+                      <p className="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-3">{branch.description}</p>
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {branch.Services?.slice(0, 3).map((svc: any) => (
+                          <span key={svc.id} className="text-xs px-2.5 py-1 rounded-full font-medium" style={{ background: "hsl(var(--primary)/0.08)", color: "hsl(var(--primary))" }}>
+                            {getTitle(svc)}
+                          </span>
+                        ))}
+                        {(branch.Services?.length || 0) > 3 && (
+                          <span className="text-xs px-2.5 py-1 rounded-full font-medium bg-muted text-muted-foreground">
+                            +{branch.Services.length - 3}
+                          </span>
+                        )}
+                      </div>
+                      {branch.Branch_techs?.length > 0 && (
+                        <div className="text-xs text-muted-foreground">
+                          <span className="font-medium text-primary">{branch.Branch_techs.length}</span> {t('branches.equipment')}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  {branch.Branch_techs?.length > 0 && (
-                    <div className="text-xs text-muted-foreground">
-                      <span className="font-medium text-primary">{branch.Branch_techs.length}</span> {t('branches.equipment')}
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-          {!branches.length && (
-            <div className="col-span-3 text-center py-20 text-muted-foreground">
-              <Building2 className="w-12 h-12 mx-auto mb-3 opacity-30" />
-              <p>{t('branches.loading')}</p>
+                );
+              })}
             </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="text-center py-20 text-muted-foreground">
+            <Building2 className="w-12 h-12 mx-auto mb-3 opacity-30" />
+            <p>{t('branches.loading')}</p>
+          </div>
+        )}
+        
+        {branches.length > 0 && (
+          <div className="text-center mt-10">
+            <Link
+              to="/branches"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-white transition-all hover:opacity-90 hover:scale-105 shadow-lg"
+              style={{ background: "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--clinic-red)) 100%)" }}
+            >
+              <Building2 className="w-5 h-5" />
+              {t('common.seeMore')}
+            </Link>
+          </div>
+        )}
       </div>
+      
+      <style>{`
+        @keyframes scroll-branches {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(calc(-100% / 3));
+          }
+        }
+        .animate-scroll-branches {
+          animation: scroll-branches 35s linear infinite;
+        }
+      `}</style>
     </section>
   );
 }
@@ -354,14 +398,15 @@ function DoctorsSection({ doctors }: { doctors: any[] }) {
           </div>
         )}
         
-        {doctors.length > 4 && (
+        {doctors.length > 0 && (
           <div className="text-center mt-10">
             <Link
               to="/doctors"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all hover:opacity-90"
-              style={{ background: "hsl(var(--primary))" }}
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-white transition-all hover:opacity-90 hover:scale-105 shadow-lg"
+              style={{ background: "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--clinic-red)) 100%)" }}
             >
-              {t('doctors.seeAll')}
+              <Stethoscope className="w-5 h-5" />
+              {t('common.seeMore')}
             </Link>
           </div>
         )}
@@ -387,51 +432,95 @@ function DoctorsSection({ doctors }: { doctors: any[] }) {
 // ── Services ───────────────────────────────────────────────────────────
 function ServicesSection({ branches }: { branches: any[] }) {
   const { t } = useTranslation();
+  const [isPaused, setIsPaused] = useState(false);
+  
   const allServices = branches.flatMap((b: any) =>
     (b.Services || []).map((s: any) => ({ ...s, branchTitle: b.title }))
   );
+  
+  // Duplicate services for infinite scroll effect
+  const displayServices = allServices.length > 0 ? [...allServices, ...allServices, ...allServices] : [];
 
   return (
-    <section id="services" className="py-24 bg-background relative z-10">
+    <section id="services" className="py-24 bg-background relative z-10 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="text-center mb-14">
           <SectionLabel>{t('services.label')}</SectionLabel>
           <SectionTitle>{t('services.title')}</SectionTitle>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {allServices.slice(0, 12).map((svc: any) => {
-            const img = svc.media?.find((m: any) => m.type?.includes("image") || m.type?.toUpperCase().includes("IMAGE"));
-            return (
-              <div key={svc.id} className="flex gap-4 bg-card rounded-2xl p-5 shadow-card hover:shadow-hover transition-all duration-300 border border-border group">
-                <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0" style={{ background: "hsl(var(--primary)/0.08)" }}>
-                  {img ? (
-                    <img src={getMediaUrl(img.url)} alt={getTitle(svc)} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Activity className="w-6 h-6 text-primary/40" />
+        
+        {allServices.length > 0 ? (
+          <div className="relative">
+            <div 
+              className="flex gap-5 animate-scroll-services"
+              style={{ 
+                animationPlayState: isPaused ? 'paused' : 'running',
+                width: 'fit-content'
+              }}
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
+            >
+              {displayServices.map((svc: any, idx: number) => {
+                const img = svc.media?.find((m: any) => m.type?.includes("image") || m.type?.toUpperCase().includes("IMAGE"));
+                return (
+                  <div key={`${svc.id}-${idx}`} className="flex gap-4 bg-card rounded-2xl p-5 shadow-card hover:shadow-hover transition-all duration-300 border border-border group flex-shrink-0 w-80">
+                    <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0" style={{ background: "hsl(var(--primary)/0.08)" }}>
+                      {img ? (
+                        <img src={getMediaUrl(img.url)} alt={getTitle(svc)} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Activity className="w-6 h-6 text-primary/40" />
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs text-muted-foreground mb-0.5">{svc.branchTitle}</p>
-                  <h4 className="font-semibold text-primary text-sm group-hover:text-clinic-red transition-colors leading-tight mb-1">
-                    {getTitle(svc)}
-                  </h4>
-                  <p className="text-clinic-red font-bold text-base">
-                    {svc.price?.toLocaleString()} <span className="text-xs font-normal text-muted-foreground">{t('services.currency')}</span>
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-          {!allServices.length && (
-            <div className="col-span-3 text-center py-20 text-muted-foreground">
-              <Activity className="w-12 h-12 mx-auto mb-3 opacity-30" />
-              <p>{t('services.loading')}</p>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-muted-foreground mb-0.5">{svc.branchTitle}</p>
+                      <h4 className="font-semibold text-primary text-sm group-hover:text-clinic-red transition-colors leading-tight mb-1">
+                        {getTitle(svc)}
+                      </h4>
+                      <p className="text-clinic-red font-bold text-base">
+                        {svc.price?.toLocaleString()} <span className="text-xs font-normal text-muted-foreground">{t('services.currency')}</span>
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="text-center py-20 text-muted-foreground">
+            <Activity className="w-12 h-12 mx-auto mb-3 opacity-30" />
+            <p>{t('services.loading')}</p>
+          </div>
+        )}
+        
+        {allServices.length > 0 && (
+          <div className="text-center mt-10">
+            <Link
+              to="/services"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-white transition-all hover:opacity-90 hover:scale-105 shadow-lg"
+              style={{ background: "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--clinic-red)) 100%)" }}
+            >
+              <Activity className="w-5 h-5" />
+              {t('common.seeMore')}
+            </Link>
+          </div>
+        )}
       </div>
+      
+      <style>{`
+        @keyframes scroll-services {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(calc(-100% / 3));
+          }
+        }
+        .animate-scroll-services {
+          animation: scroll-services 45s linear infinite;
+        }
+      `}</style>
     </section>
   );
 }
@@ -513,14 +602,15 @@ function NewsSection({ news }: { news: any[] }) {
           </div>
         )}
         
-        {news.length > 3 && (
+        {news.length > 0 && (
           <div className="text-center mt-10">
             <Link
               to="/news"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all hover:opacity-90"
-              style={{ background: "hsl(var(--primary))" }}
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-white transition-all hover:opacity-90 hover:scale-105 shadow-lg"
+              style={{ background: "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--clinic-red)) 100%)" }}
             >
-              {t('news.seeAll')}
+              <Newspaper className="w-5 h-5" />
+              {t('common.seeMore')}
             </Link>
           </div>
         )}
@@ -547,7 +637,12 @@ function NewsSection({ news }: { news: any[] }) {
 function GallerySection({ gallery }: { gallery: any[] }) {
   const { t } = useTranslation();
   const [selected, setSelected] = useState<string | null>(null);
+  const [isPaused, setIsPaused] = useState(false);
+  
   const allMedia = gallery.flatMap((g: any) => g.media || []);
+  
+  // Duplicate media for infinite scroll effect
+  const displayMedia = allMedia.length > 0 ? [...allMedia, ...allMedia, ...allMedia] : [];
   
   console.log("GallerySection rendering with gallery:", gallery);
   console.log("GallerySection gallery count:", gallery.length);
@@ -555,52 +650,66 @@ function GallerySection({ gallery }: { gallery: any[] }) {
   console.log("GallerySection allMedia count:", allMedia.length);
 
   return (
-    <section id="gallery" className="py-24 bg-background relative z-10">
+    <section id="gallery" className="py-24 bg-background relative z-10 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="text-center mb-14">
           <SectionLabel>{t('gallery.label')}</SectionLabel>
           <SectionTitle>{t('gallery.title')}</SectionTitle>
         </div>
-        <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
-          {allMedia.slice(0, 8).map((m: any) => {
-            console.log("GallerySection - Rendering media:", m);
-            const mediaUrl = getMediaUrl(m.url);
-            console.log("GallerySection - Media URL:", mediaUrl);
-            return (
-              <div
-                key={m.id}
-                className="break-inside-avoid rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition-opacity shadow-card"
-                onClick={() => setSelected(mediaUrl)}
-              >
-                {m.type?.includes("image") ? (
-                  <img 
-                    src={mediaUrl} 
-                    alt="" 
-                    className="w-full h-auto block" 
-                    onError={(e) => console.error("GallerySection - Image failed to load:", m.url, e)}
-                    onLoad={() => console.log("GallerySection - Image loaded successfully:", m.url)}
-                  />
-                ) : (
-                  <video src={mediaUrl} className="w-full h-auto block" muted />
-                )}
-              </div>
-            );
-          })}
-          {!allMedia.length && (
-            <div className="col-span-4 text-center py-20 text-muted-foreground">
-              <ImageIcon className="w-12 h-12 mx-auto mb-3 opacity-30" />
-              <p>{t('gallery.empty')}</p>
+        
+        {allMedia.length > 0 ? (
+          <div className="relative">
+            <div 
+              className="flex gap-4 animate-scroll-gallery"
+              style={{ 
+                animationPlayState: isPaused ? 'paused' : 'running',
+                width: 'fit-content'
+              }}
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
+            >
+              {displayMedia.map((m: any, idx: number) => {
+                console.log("GallerySection - Rendering media:", m);
+                const mediaUrl = getMediaUrl(m.url);
+                console.log("GallerySection - Media URL:", mediaUrl);
+                return (
+                  <div
+                    key={`${m.id}-${idx}`}
+                    className="break-inside-avoid rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition-opacity shadow-card flex-shrink-0 w-64"
+                    onClick={() => setSelected(mediaUrl)}
+                  >
+                    {m.type?.includes("image") ? (
+                      <img 
+                        src={mediaUrl} 
+                        alt="" 
+                        className="w-full h-auto block" 
+                        onError={(e) => console.error("GallerySection - Image failed to load:", m.url, e)}
+                        onLoad={() => console.log("GallerySection - Image loaded successfully:", m.url)}
+                      />
+                    ) : (
+                      <video src={mediaUrl} className="w-full h-auto block" muted />
+                    )}
+                  </div>
+                );
+              })}
             </div>
-          )}
-        </div>
-        {allMedia.length > 8 && (
+          </div>
+        ) : (
+          <div className="text-center py-20 text-muted-foreground">
+            <ImageIcon className="w-12 h-12 mx-auto mb-3 opacity-30" />
+            <p>{t('gallery.empty')}</p>
+          </div>
+        )}
+        
+        {allMedia.length > 0 && (
           <div className="text-center mt-10">
             <Link
               to="/gallery"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all hover:opacity-90"
-              style={{ background: "hsl(var(--primary))" }}
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-white transition-all hover:opacity-90 hover:scale-105 shadow-lg"
+              style={{ background: "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--clinic-red)) 100%)" }}
             >
-              {t('gallery.seeAll')}
+              <ImageIcon className="w-5 h-5" />
+              {t('common.seeMore')}
             </Link>
           </div>
         )}
@@ -615,6 +724,20 @@ function GallerySection({ gallery }: { gallery: any[] }) {
           <img src={selected} alt="" className="max-w-full max-h-full rounded-xl object-contain" />
         </div>
       )}
+      
+      <style>{`
+        @keyframes scroll-gallery {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(calc(-100% / 3));
+          }
+        }
+        .animate-scroll-gallery {
+          animation: scroll-gallery 50s linear infinite;
+        }
+      `}</style>
     </section>
   );
 }
@@ -625,6 +748,10 @@ function FeedbackSection({ feedbacks }: { feedbacks: any[] }) {
   const [form, setForm] = useState({ full_name: "", phone_number: "", email: "", content: "" });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  
+  // Duplicate feedbacks for infinite scroll effect
+  const displayFeedbacks = feedbacks.length > 0 ? [...feedbacks, ...feedbacks, ...feedbacks] : [];
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -641,29 +768,55 @@ function FeedbackSection({ feedbacks }: { feedbacks: any[] }) {
   };
 
   return (
-    <section id="feedback" className="py-24 bg-secondary/30 relative z-10">
+    <section id="feedback" className="py-24 bg-secondary/30 relative z-10 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="text-center mb-14">
           <SectionLabel>{t('feedback.label')}</SectionLabel>
           <SectionTitle>{t('feedback.title')}</SectionTitle>
         </div>
 
-        {/* Reviews */}
+        {/* Reviews Carousel */}
         {feedbacks.length > 0 && (
-          <div className="grid md:grid-cols-3 gap-6 mb-16">
-            {feedbacks.slice(0, 3).map((fb: any) => (
-              <div key={fb.id} className="bg-card rounded-2xl p-6 shadow-card border border-border">
-                <div className="flex mb-3">
-                  {[1, 2, 3, 4, 5].map((s) => (
-                    <Star key={s} className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                  ))}
-                </div>
-                <p className="text-muted-foreground text-sm leading-relaxed mb-4 italic">"{fb.content}"</p>
-                <div className="font-semibold text-primary text-sm">{fb.full_name}</div>
-                <div className="text-xs text-muted-foreground">{fb.phone_number}</div>
+          <>
+            <div className="relative mb-16">
+              <div 
+                className="flex gap-6 animate-scroll-feedback"
+                style={{ 
+                  animationPlayState: isPaused ? 'paused' : 'running',
+                  width: 'fit-content'
+                }}
+                onMouseEnter={() => setIsPaused(true)}
+                onMouseLeave={() => setIsPaused(false)}
+              >
+                {displayFeedbacks.map((fb: any, idx: number) => (
+                  <div key={`${fb.id}-${idx}`} className="bg-card rounded-2xl p-6 shadow-card border border-border flex-shrink-0 w-80">
+                    <div className="flex mb-3">
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <Star key={s} className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                      ))}
+                    </div>
+                    <p className="text-muted-foreground text-sm leading-relaxed mb-4 italic line-clamp-4">"{fb.content}"</p>
+                    <div className="font-semibold text-primary text-sm">{fb.full_name}</div>
+                    <div className="text-xs text-muted-foreground">{fb.phone_number}</div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+            
+            <style>{`
+              @keyframes scroll-feedback {
+                0% {
+                  transform: translateX(0);
+                }
+                100% {
+                  transform: translateX(calc(-100% / 3));
+                }
+              }
+              .animate-scroll-feedback {
+                animation: scroll-feedback 40s linear infinite;
+              }
+            `}</style>
+          </>
         )}
 
         {/* Leave feedback form */}
@@ -873,15 +1026,15 @@ export default function Landing() {
 
       {/* White content below hero */}
       <div className="relative z-10">
+        <NewsSection news={data.news} />
         <StatsSection stats={data.stats} />
         <AboutSection aboutUs={data.aboutUs} />
         <BranchesSection branches={data.branches} />
         <DoctorsSection doctors={data.doctors} />
         <ServicesSection branches={data.branches} />
-        <NewsSection news={data.news} />
         <GallerySection gallery={data.gallery} />
-        <FeedbackSection feedbacks={data.feedbacks} />
         <ConsultationSection />
+        <FeedbackSection feedbacks={data.feedbacks} />
         <ContactsSection contacts={data.contacts} />
         <Footer />
       </div>
