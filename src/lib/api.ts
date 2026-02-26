@@ -1,4 +1,4 @@
-const BASE_URL = "/api";
+const BASE_URL = "http://localhost:9007";
 
 export function getToken(): string | null {
   return localStorage.getItem("clinic_token");
@@ -58,9 +58,7 @@ async function request<T>(
   if (auth) {
     const token = getToken();
     if (token) {
-      // Use both custom header and standard Authorization header for compatibility
       headers["access_token"] = token;
-      headers["Authorization"] = `Bearer ${token}`;
     } else {
       console.warn("Auth required but no token found");
     }
@@ -129,6 +127,7 @@ export const api = {
     editUsername: (data: any) => request<any>("/admin/edit-username", { method: "PATCH", body: JSON.stringify(data) }, true),
     editPassword: (data: any) => request<any>("/admin/edit-password", { method: "PATCH", body: JSON.stringify(data) }, true),
 
+
     // About
     createAbout: (data: any) => request<any>("/about/us", { method: "POST", body: JSON.stringify(data) }, true),
     editAbout: (id: number, data: any) => request<any>(`/about/us/${id}`, { method: "PATCH", body: JSON.stringify(data) }, true),
@@ -190,6 +189,7 @@ export const api = {
     deleteReception: (id: string) => request<any>(`/reception/${id}`, { method: "DELETE" }, true),
   },
 
+
   // ── Reception endpoints ────────────────────────────────────────────
   reception: {
     getProfile: () => request<any>("/reception/profile/me", {}, true),
@@ -207,28 +207,18 @@ export const api = {
 
 export const MEDIA_BASE = BASE_URL;
 
-// Helper function to get full media URL
+export const API_BASE = "/api";
+export const UPLOADS_PREFIX = "/uploads";
+
 export function getMediaUrl(path: string | null | undefined): string {
-  if (!path) {
-    console.log("getMediaUrl: path is null/undefined");
-    return "";
+  if (!path) return "";
+
+  if (/^https?:\/\//i.test(path)) return path;
+
+  const p = path.startsWith("/") ? path : `/${path}`;
+
+  if (p.startsWith(UPLOADS_PREFIX + "/")) {
+    return `${API_BASE}${p}`;
   }
-  if (path.startsWith("http://") || path.startsWith("https://")) {
-    console.log("getMediaUrl: already full URL:", path);
-    return path;
-  }
-  
-  // If path starts with /uploads/, use /api/uploads/ for the proxy
-  // Otherwise use BASE_URL
-  let fullUrl: string;
-  if (path.startsWith("/uploads/")) {
-    fullUrl = `/api${path}`;
-  } else if (path.startsWith("uploads/")) {
-    fullUrl = `/api/${path}`;
-  } else {
-    fullUrl = `${MEDIA_BASE}${path.startsWith("/") ? path : `/${path}`}`;
-  }
-  
-  console.log("getMediaUrl: converting", path, "to", fullUrl);
-  return fullUrl;
+  return `${API_BASE}${p}`;
 }
