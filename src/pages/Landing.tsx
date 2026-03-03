@@ -274,8 +274,8 @@ function AboutSection({ aboutUs }: { aboutUs: any[] }) {
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <SectionLabel>{t("about.label")}</SectionLabel>
-            <SectionTitle>{t("about.title")}</SectionTitle>
+            <p className="text-clinic-red font-semibold text-sm uppercase tracking-widest mb-2">{t("about.label")}</p>
+            <h2 className="font-display font-bold text-3xl text-white mb-4">{t("about.title")}</h2>
           </div>
           <div className="grid md:grid-cols-2 gap-8">
             {aboutUs.map((item: any) => (
@@ -429,8 +429,8 @@ function DoctorsSection({ doctors }: { doctors: any[] }) {
     <section id="doctors" className="py-24 bg-secondary/30 relative z-10 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="text-center mb-14">
-          <SectionLabel>{t("doctors.label")}</SectionLabel>
-          <SectionTitle>{t("doctors.title")}</SectionTitle>
+          <p className="text-clinic-red font-semibold text-sm uppercase tracking-widest mb-2">{t("doctors.label")}</p>
+          <h2 className="font-display font-bold text-3xl text-white mb-4">{t("doctors.title")}</h2>
         </div>
 
         {doctors.length > 0 ? (
@@ -526,8 +526,8 @@ function NewsSection({ news }: { news: any[] }) {
     <section id="news" className="py-24 bg-secondary/30 relative z-10 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="text-center mb-14">
-          <SectionLabel>{t("news.label")}</SectionLabel>
-          <SectionTitle>{t("news.title")}</SectionTitle>
+          <p className="text-clinic-red font-semibold text-sm uppercase tracking-widest mb-2">{t("news.label")}</p>
+          <h2 className="font-display font-bold text-3xl text-white mb-4">{t("news.title")}</h2>
         </div>
 
         {news.length > 0 ? (
@@ -714,8 +714,8 @@ function FeedbackSection({ feedbacks }: { feedbacks: any[] }) {
     <section id="feedback" className="py-24 bg-secondary/30 relative z-10 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="text-center mb-14">
-          <SectionLabel>{t("feedback.label")}</SectionLabel>
-          <SectionTitle>{t("feedback.title")}</SectionTitle>
+          <p className="text-clinic-red font-semibold text-sm uppercase tracking-widest mb-2">{t("feedback.label")}</p>
+          <h2 className="font-display font-bold text-3xl text-white mb-4">{t("feedback.title")}</h2>
         </div>
 
         {feedbacks.length > 0 && (
