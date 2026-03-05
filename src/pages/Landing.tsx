@@ -119,12 +119,12 @@ function DoctorModal({ doctor, onClose }: { doctor: any; onClose: () => void }) 
     <DetailModal open={!!doctor} onClose={onClose}>
       {doctor && (
         <div className="grid md:grid-cols-5 gap-0">
-          <div className="md:col-span-2 relative">
+          <div className="md:col-span-2 relative bg-muted">
             {img ? (
               <img 
                 src={getMediaUrl(img.url)} 
                 alt={`${doctor.first_name} ${doctor.second_name}`} 
-                className="w-full h-full object-cover min-h-[500px]" 
+                className="w-full h-full object-contain min-h-[500px]" 
               />
             ) : (
               <div className="w-full h-full min-h-[500px] bg-muted flex items-center justify-center">
