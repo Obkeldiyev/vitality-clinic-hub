@@ -165,6 +165,7 @@ function DataTable({ columns, rows, onEdit, onDelete, onCustom }: any) {
 
 // ── Section header ─────────────────────────────────────────────────────
 function SectionHeader({ title, onAdd }: { title: string; onAdd?: () => void }) {
+  const { t } = useTranslation();
   return (
     <div className="flex items-center justify-between mb-6">
       <h2 className="font-display font-bold text-2xl text-primary">{title}</h2>
@@ -182,6 +183,7 @@ function SectionHeader({ title, onAdd }: { title: string; onAdd?: () => void }) 
 
 // ── Overview ───────────────────────────────────────────────────────────
 function OverviewSection() {
+  const { t } = useTranslation();
   const [counts, setCounts] = useState({ branches: 0, doctors: 0, news: 0, gallery: 0, stats: 0, feedback: 0, receptions: 0, contacts: 0 });
   useEffect(() => {
     Promise.allSettled([
@@ -234,6 +236,7 @@ function OverviewSection() {
 
 // ── Branches Section ───────────────────────────────────────────────────
 function BranchesSection() {
+  const { t } = useTranslation();
   const [items, setItems] = useState<any[]>([]);
   const [modal, setModal] = useState<{ type: "create" | "edit"; item?: any } | null>(null);
   const [confirm, setConfirm] = useState<any | null>(null);
@@ -553,6 +556,7 @@ function BranchesSection() {
 
 // ── Doctors Section ────────────────────────────────────────────────────
 function DoctorsSection() {
+  const { t } = useTranslation();
   const [items, setItems] = useState<any[]>([]);
   const [modal, setModal] = useState<{ type: string; item?: any } | null>(null);
   const [confirm, setConfirm] = useState<any>(null);
@@ -669,6 +673,7 @@ function DoctorsSection() {
 
 // ── News Section ───────────────────────────────────────────────────────
 function NewsSection() {
+  const { t } = useTranslation();
   const [items, setItems] = useState<any[]>([]);
   const [modal, setModal] = useState<any>(null);
   const [confirm, setConfirm] = useState<any>(null);
@@ -806,6 +811,7 @@ function NewsSection() {
 
 // ── Gallery Section ────────────────────────────────────────────────────
 function GalleryAdminSection() {
+  const { t } = useTranslation();
   const [items, setItems] = useState<any[]>([]);
   const [modal, setModal] = useState<any>(null);
   const [confirm, setConfirm] = useState<any>(null);
@@ -902,6 +908,7 @@ function GalleryAdminSection() {
 
 // ── Statistics Section ─────────────────────────────────────────────────
 function StatisticsSection() {
+  const { t } = useTranslation();
   const [items, setItems] = useState<any[]>([]);
   const [modal, setModal] = useState<any>(null);
   const [confirm, setConfirm] = useState<any>(null);
@@ -959,6 +966,7 @@ function StatisticsSection() {
 
 // ── Feedback Section ───────────────────────────────────────────────────
 function FeedbackAdminSection() {
+  const { t } = useTranslation();
   const [items, setItems] = useState<any[]>([]);
   const [confirm, setConfirm] = useState<any>(null);
 
@@ -993,6 +1001,7 @@ function FeedbackAdminSection() {
 
 // ── Receptions Section ─────────────────────────────────────────────────
 function ReceptionsSection() {
+  const { t } = useTranslation();
   const [items, setItems] = useState<any[]>([]);
   const [modal, setModal] = useState<any>(null);
   const [confirm, setConfirm] = useState<any>(null);
@@ -1077,6 +1086,7 @@ function ReceptionsSection() {
 
 // ── About Section ──────────────────────────────────────────────────────
 function AboutAdminSection() {
+  const { t } = useTranslation();
   const [items, setItems] = useState<any[]>([]);
   const [modal, setModal] = useState<any>(null);
   const [confirm, setConfirm] = useState<any>(null);
@@ -1128,6 +1138,7 @@ function AboutAdminSection() {
 
 // ── Contacts Admin Section ─────────────────────────────────────────────
 function ContactsAdminSection() {
+  const { t } = useTranslation();
   const [items, setItems] = useState<any[]>([]);
   const [modal, setModal] = useState<any>(null);
   const [confirm, setConfirm] = useState<any>(null);
