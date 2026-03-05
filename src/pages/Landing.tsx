@@ -35,18 +35,20 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 function DetailModal({ open, onClose, children }: { open: boolean; onClose: () => void; children: React.ReactNode }) {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4" onClick={onClose}>
       <div
-        className="bg-card rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+        className="bg-card rounded-3xl shadow-2xl w-full max-w-5xl max-h-[95vh] overflow-hidden relative"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-colors"
+          className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center transition-colors backdrop-blur-sm"
         >
           <X className="w-5 h-5" />
         </button>
-        {children}
+        <div className="overflow-y-auto max-h-[95vh]">
+          {children}
+        </div>
       </div>
     </div>
   );
@@ -55,25 +57,29 @@ function DetailModal({ open, onClose, children }: { open: boolean; onClose: () =
 // ── Branch Modal ───────────────────────────────────────────────────────
 function BranchModal({ branch, onClose }: { branch: any; onClose: () => void }) {
   const { t } = useTranslation();
-  const img = branch?.media?.find((m: any) => m.type?.includes("image"));
+  const images = branch?.media?.filter((m: any) => m.type?.includes("image")) || [];
   
   return (
     <DetailModal open={!!branch} onClose={onClose}>
       {branch && (
         <div>
-          {img && (
-            <div className="h-80 overflow-hidden">
-              <img src={getMediaUrl(img.url)} alt={branch.title} className="w-full h-full object-cover" />
+          {images.length > 0 && (
+            <div className="relative h-72 overflow-hidden">
+              <img src={getMediaUrl(images[0].url)} alt={branch.title} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-6">
+                <h2 className="font-display font-bold text-4xl text-white">{branch.title}</h2>
+              </div>
             </div>
           )}
-          <div className="p-8">
-            <h2 className="font-display font-bold text-3xl text-primary mb-4">{branch.title}</h2>
+          <div className="p-6">
+            {!images.length && <h2 className="font-display font-bold text-3xl text-primary mb-4">{branch.title}</h2>}
             <p className="text-muted-foreground leading-relaxed mb-6">{branch.description}</p>
             
             {branch.Services?.length > 0 && (
               <div className="mb-6">
                 <h3 className="font-semibold text-lg text-primary mb-3">{t("services.label")}</h3>
-                <div className="grid gap-3">
+                <div className="grid md:grid-cols-2 gap-2">
                   {branch.Services.map((svc: any) => (
                     <div key={svc.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/50 border border-border">
                       <span className="text-sm font-medium">{getTitle(svc)}</span>
@@ -87,7 +93,7 @@ function BranchModal({ branch, onClose }: { branch: any; onClose: () => void }) 
             {branch.Branch_techs?.length > 0 && (
               <div>
                 <h3 className="font-semibold text-lg text-primary mb-3">{t("branches.equipment")}</h3>
-                <div className="grid gap-3">
+                <div className="grid md:grid-cols-2 gap-2">
                   {branch.Branch_techs.map((tech: any) => (
                     <div key={tech.id} className="p-3 rounded-xl bg-muted/50 border border-border">
                       <p className="text-sm font-medium mb-1">{tech.title}</p>
@@ -107,52 +113,54 @@ function BranchModal({ branch, onClose }: { branch: any; onClose: () => void }) 
 // ── Doctor Modal ───────────────────────────────────────────────────────
 function DoctorModal({ doctor, onClose }: { doctor: any; onClose: () => void }) {
   const { t } = useTranslation();
-  const img = doctor?.media?.find((m: any) => m.type?.includes("image"));
+  const images = doctor?.media?.filter((m: any) => m.type?.includes("image")) || [];
   
   return (
     <DetailModal open={!!doctor} onClose={onClose}>
       {doctor && (
-        <div>
-          <div className="grid md:grid-cols-2 gap-8 p-8">
-            <div>
-              {img ? (
-                <img src={getMediaUrl(img.url)} alt={`${doctor.first_name} ${doctor.second_name}`} className="w-full rounded-2xl object-cover" />
-              ) : (
-                <div className="w-full aspect-square rounded-2xl bg-muted flex items-center justify-center">
-                  <Stethoscope className="w-20 h-20 text-primary/30" />
+        <div className="grid md:grid-cols-5 gap-0">
+          <div className="md:col-span-2 relative">
+            {images.length > 0 ? (
+              <img 
+                src={getMediaUrl(images[0].url)} 
+                alt={`${doctor.first_name} ${doctor.second_name}`} 
+                className="w-full h-full object-cover min-h-[500px]" 
+              />
+            ) : (
+              <div className="w-full h-full min-h-[500px] bg-muted flex items-center justify-center">
+                <Stethoscope className="w-20 h-20 text-primary/30" />
+              </div>
+            )}
+          </div>
+          <div className="md:col-span-3 p-6">
+            <h2 className="font-display font-bold text-3xl text-primary mb-1">
+              {doctor.first_name} {doctor.second_name}
+            </h2>
+            {doctor.third_name && <p className="text-muted-foreground mb-4">{doctor.third_name}</p>}
+            <p className="text-muted-foreground leading-relaxed mb-6">{doctor.description}</p>
+            
+            {doctor.branch && (
+              <div className="mb-4 p-3 rounded-xl bg-muted/50 border border-border">
+                <p className="text-xs text-muted-foreground mb-1">{t("branches.label")}</p>
+                <p className="text-sm font-semibold text-primary">{doctor.branch.title}</p>
+              </div>
+            )}
+            
+            {doctor.awards?.length > 0 && (
+              <div>
+                <h3 className="font-semibold text-lg text-primary mb-3 flex items-center gap-2">
+                  <Award className="w-5 h-5" />
+                  {t("doctors.awards")}
+                </h3>
+                <div className="space-y-2">
+                  {doctor.awards.map((award: any) => (
+                    <div key={award.id} className="p-3 rounded-xl bg-muted/50 border border-border">
+                      <p className="text-sm font-medium">{award.name}</p>
+                    </div>
+                  ))}
                 </div>
-              )}
-            </div>
-            <div>
-              <h2 className="font-display font-bold text-3xl text-primary mb-2">
-                {doctor.first_name} {doctor.second_name}
-              </h2>
-              {doctor.third_name && <p className="text-muted-foreground mb-4">{doctor.third_name}</p>}
-              <p className="text-muted-foreground leading-relaxed mb-6">{doctor.description}</p>
-              
-              {doctor.branch && (
-                <div className="mb-4 p-3 rounded-xl bg-muted/50 border border-border">
-                  <p className="text-xs text-muted-foreground mb-1">{t("branches.label")}</p>
-                  <p className="text-sm font-semibold text-primary">{doctor.branch.title}</p>
-                </div>
-              )}
-              
-              {doctor.awards?.length > 0 && (
-                <div>
-                  <h3 className="font-semibold text-lg text-primary mb-3 flex items-center gap-2">
-                    <Award className="w-5 h-5" />
-                    {t("doctors.awards")}
-                  </h3>
-                  <div className="space-y-2">
-                    {doctor.awards.map((award: any) => (
-                      <div key={award.id} className="p-3 rounded-xl bg-muted/50 border border-border">
-                        <p className="text-sm font-medium">{award.name}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -163,28 +171,40 @@ function DoctorModal({ doctor, onClose }: { doctor: any; onClose: () => void }) 
 // ── News Modal ─────────────────────────────────────────────────────────
 function NewsModal({ newsItem, onClose }: { newsItem: any; onClose: () => void }) {
   const allMedia = newsItem?.media || [];
+  const images = allMedia.filter((m: any) => m.type?.includes("image"));
   
   return (
     <DetailModal open={!!newsItem} onClose={onClose}>
       {newsItem && (
         <div>
-          {allMedia.length > 0 && (
-            <div className="grid grid-cols-2 gap-2 p-4">
-              {allMedia.map((m: any) => (
-                <div key={m.id} className="rounded-xl overflow-hidden">
-                  {m.type?.includes("image") ? (
-                    <img src={getMediaUrl(m.url)} alt="" className="w-full h-full object-cover" />
-                  ) : (
-                    <video src={getMediaUrl(m.url)} controls className="w-full h-full" />
-                  )}
-                </div>
-              ))}
+          {images.length > 0 && (
+            <div className="relative h-96 overflow-hidden">
+              <img src={getMediaUrl(images[0].url)} alt={getTitle(newsItem)} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-6">
+                <h2 className="font-display font-bold text-4xl text-white mb-2">{getTitle(newsItem)}</h2>
+                <p className="text-white/90 text-sm">{getDescription(newsItem)}</p>
+              </div>
             </div>
           )}
-          <div className="p-8">
-            <h2 className="font-display font-bold text-3xl text-primary mb-4">{getTitle(newsItem)}</h2>
-            <p className="text-muted-foreground text-sm mb-4">{getDescription(newsItem)}</p>
-            <p className="text-foreground leading-relaxed">{getContent(newsItem)}</p>
+          <div className="p-6">
+            {!images.length && (
+              <>
+                <h2 className="font-display font-bold text-3xl text-primary mb-2">{getTitle(newsItem)}</h2>
+                <p className="text-muted-foreground text-sm mb-4">{getDescription(newsItem)}</p>
+              </>
+            )}
+            <p className="text-foreground leading-relaxed mb-6">{getContent(newsItem)}</p>
+            
+            {images.length > 1 && (
+              <div className="grid grid-cols-3 gap-2">
+                {images.slice(1).map((m: any) => (
+                  <div key={m.id} className="rounded-xl overflow-hidden aspect-square">
+                    <img src={getMediaUrl(m.url)} alt="" className="w-full h-full object-cover" />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
