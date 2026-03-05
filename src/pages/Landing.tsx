@@ -270,7 +270,7 @@ function StatsSection({ stats }: { stats: any[] }) {
 function AboutSection({ aboutUs }: { aboutUs: any[] }) {
   const { t } = useTranslation();
   return (
-    <section id="about" className="py-24 bg-secondary/30 relative z-10">
+    <section id="about" className="py-24 bg-secondary/60 relative z-10">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
@@ -426,7 +426,7 @@ function DoctorsSection({ doctors }: { doctors: any[] }) {
   const displayDoctors = doctors.length > 0 ? [...doctors, ...doctors, ...doctors] : [];
 
   return (
-    <section id="doctors" className="py-24 bg-secondary/30 relative z-10 overflow-hidden">
+    <section id="doctors" className="py-24 bg-secondary/60 relative z-10 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="text-center mb-14">
           <p className="text-clinic-red font-semibold text-sm uppercase tracking-widest mb-2">{t("doctors.label")}</p>
@@ -523,7 +523,7 @@ function NewsSection({ news }: { news: any[] }) {
   const displayNews = news.length > 0 ? [...news, ...news, ...news] : [];
 
   return (
-    <section id="news" className="py-24 bg-secondary/30 relative z-10 overflow-hidden">
+    <section id="news" className="py-24 bg-secondary/60 relative z-10 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="text-center mb-14">
           <p className="text-clinic-red font-semibold text-sm uppercase tracking-widest mb-2">{t("news.label")}</p>
@@ -711,7 +711,7 @@ function FeedbackSection({ feedbacks }: { feedbacks: any[] }) {
   };
 
   return (
-    <section id="feedback" className="py-24 bg-secondary/30 relative z-10 overflow-hidden">
+    <section id="feedback" className="py-24 bg-secondary/60 relative z-10 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="text-center mb-14">
           <p className="text-clinic-red font-semibold text-sm uppercase tracking-widest mb-2">{t("feedback.label")}</p>
