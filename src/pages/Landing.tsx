@@ -57,7 +57,7 @@ function DetailModal({ open, onClose, children }: { open: boolean; onClose: () =
 // ── Branch Modal ───────────────────────────────────────────────────────
 function BranchModal({ branch, onClose }: { branch: any; onClose: () => void }) {
   const { t } = useTranslation();
-  const images = branch?.media?.filter((m: any) => m.type?.includes("image")) || [];
+  const images = branch?.media?.filter((m: any) => m.type?.includes("image") || m.type?.toUpperCase().includes("IMAGE")) || [];
   
   return (
     <DetailModal open={!!branch} onClose={onClose}>
@@ -113,16 +113,16 @@ function BranchModal({ branch, onClose }: { branch: any; onClose: () => void }) 
 // ── Doctor Modal ───────────────────────────────────────────────────────
 function DoctorModal({ doctor, onClose }: { doctor: any; onClose: () => void }) {
   const { t } = useTranslation();
-  const images = doctor?.media?.filter((m: any) => m.type?.includes("image")) || [];
+  const img = doctor?.media?.find((m: any) => m.type?.includes("image") || m.type?.toUpperCase().includes("IMAGE"));
   
   return (
     <DetailModal open={!!doctor} onClose={onClose}>
       {doctor && (
         <div className="grid md:grid-cols-5 gap-0">
           <div className="md:col-span-2 relative">
-            {images.length > 0 ? (
+            {img ? (
               <img 
-                src={getMediaUrl(images[0].url)} 
+                src={getMediaUrl(img.url)} 
                 alt={`${doctor.first_name} ${doctor.second_name}`} 
                 className="w-full h-full object-cover min-h-[500px]" 
               />
@@ -171,7 +171,7 @@ function DoctorModal({ doctor, onClose }: { doctor: any; onClose: () => void }) 
 // ── News Modal ─────────────────────────────────────────────────────────
 function NewsModal({ newsItem, onClose }: { newsItem: any; onClose: () => void }) {
   const allMedia = newsItem?.media || [];
-  const images = allMedia.filter((m: any) => m.type?.includes("image"));
+  const images = allMedia.filter((m: any) => m.type?.includes("image") || m.type?.toUpperCase().includes("IMAGE"));
   
   return (
     <DetailModal open={!!newsItem} onClose={onClose}>
