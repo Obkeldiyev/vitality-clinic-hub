@@ -895,7 +895,7 @@ function GalleryAdminSection() {
           </div>
         </div>
       </Modal>
-      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message=t('admin.deleteGalleryConfirm') />
+      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message={t('admin.deleteGalleryConfirm')} />
     </div>
   );
 }
@@ -952,7 +952,7 @@ function StatisticsSection() {
           </div>
         </div>
       </Modal>
-      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message=t('admin.deleteStatisticConfirm') />
+      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message={t('admin.deleteStatisticConfirm')} />
     </div>
   );
 }
@@ -986,7 +986,7 @@ function FeedbackAdminSection() {
           </button>
         )}
       />
-      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message=t('admin.deleteFeedbackConfirm') />
+      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message={t('admin.deleteFeedbackConfirm')} />
     </div>
   );
 }
@@ -1027,7 +1027,7 @@ function ReceptionsSection() {
         ]}
         rows={items} onDelete={(r: any) => setConfirm(r)}
       />
-      <Modal open={!!modal} onClose={() => setModal(null)} title=t('admin.addReceptionistTitle')>
+      <Modal open={!!modal} onClose={() => setModal(null)} title={t('admin.addReceptionistTitle')}>
         <div className="space-y-3">
           {[["first_name", t('admin.firstName')], ["second_name", t('admin.lastName')], ["username", t('admin.loginLabel')], ["password", t('admin.password')]].map(([k, label]) => (
             <div key={k}><label className="text-xs font-medium text-muted-foreground mb-1 block">{label}</label>
@@ -1121,7 +1121,7 @@ function AboutAdminSection() {
           </div>
         </div>
       </Modal>
-      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message=t('admin.deleteSectionConfirm') />
+      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message={t('admin.deleteSectionConfirm')} />
     </div>
   );
 }
@@ -1168,7 +1168,7 @@ function ContactsAdminSection() {
           </div>
         </div>
       </Modal>
-      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message=t('admin.deleteContactConfirm') />
+      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message={t('admin.deleteContactConfirm')} />
     </div>
   );
 }

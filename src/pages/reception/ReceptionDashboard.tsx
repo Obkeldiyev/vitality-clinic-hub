@@ -245,7 +245,7 @@ export default function ReceptionDashboard() {
       </div>
 
       {/* Create patient modal */}
-      <Modal open={createModal} onClose={() => setCreateModal(false)} title=t('admin.registerPatient')>
+      <Modal open={createModal} onClose={() => setCreateModal(false)} title={t('admin.registerPatient')}>
         <div className="space-y-3">
           {[["first_name", t('admin.firstName'), "text"], ["second_name", t('admin.lastName'), "text"], ["third_name", t('admin.middleNameOptional'), "text"], ["phone_number", t('admin.phoneNumber'), "tel"]].map(([k, label, type]) => (
             <div key={k}><label className="text-xs font-medium text-muted-foreground mb-1 block">{label}</label>
@@ -265,7 +265,7 @@ export default function ReceptionDashboard() {
       </Modal>
 
       {/* Patient detail modal */}
-      <Modal open={!!selected} onClose={() => setSelected(null)} title=t('admin.patientDetails')>
+      <Modal open={!!selected} onClose={() => setSelected(null)} title={t('admin.patientDetails')}>
         {selected && (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">

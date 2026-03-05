@@ -54,7 +54,7 @@ export default function Navbar() {
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
         <Link to="/" className="flex items-center">
-          <img src="/aslmedline.png" alt="ASL Medline" className="h-14 w-auto object-contain transition-all duration-300" />
+          <img src="/aslmedline.png" alt="ASL Medline" className="h-12 w-auto object-contain transition-all duration-300" />
         </Link>
 
         {/* Desktop nav */}
