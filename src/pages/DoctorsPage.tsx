@@ -130,7 +130,7 @@ export default function DoctorsPage() {
               {/* Doctor Photo - Full Size */}
               {selectedDoctor.media?.find((m: any) => m.type?.toUpperCase().includes("IMAGE")) && (
                 <div className="relative">
-                  <div className="aspect-[21/9] rounded-2xl overflow-hidden bg-black">
+                  <div className="aspect-[21/9] rounded-2xl overflow-hidden bg-white">
                     <img
                       src={getMediaUrl(selectedDoctor.media.find((m: any) => m.type?.toUpperCase().includes("IMAGE")).url)}
                       alt={`${selectedDoctor.first_name} ${selectedDoctor.second_name}`}
