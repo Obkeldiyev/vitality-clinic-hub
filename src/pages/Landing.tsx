@@ -76,11 +76,11 @@ function BranchModal({ branch, onClose }: { branch: any; onClose: () => void }) 
             {!images.length && <h2 className="font-display font-bold text-3xl text-primary mb-4">{branch.title}</h2>}
             <p className="text-muted-foreground leading-relaxed mb-6">{branch.description}</p>
             
-            {branch.Services?.length > 0 && (
+            {branch.Services?.filter((svc: any) => svc.price > 0).length > 0 && (
               <div className="mb-6">
                 <h3 className="font-semibold text-lg text-primary mb-3">{t("services.label")}</h3>
                 <div className="grid md:grid-cols-2 gap-2">
-                  {branch.Services.map((svc: any) => (
+                  {branch.Services.filter((svc: any) => svc.price > 0).map((svc: any) => (
                     <div key={svc.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/50 border border-border">
                       <span className="text-sm font-medium">{getTitle(svc)}</span>
                       <span className="text-sm font-bold text-primary">{svc.price} {t("services.currency")}</span>
@@ -529,7 +529,7 @@ function BranchesSection({ branches, onBranchClick }: { branches: any[]; onBranc
                       {branch.description}
                     </p>
                     <div className="flex flex-wrap gap-2 mb-4">
-                      {branch.Services?.slice(0, 3).map((svc: any) => (
+                      {branch.Services?.filter((svc: any) => svc.price > 0).slice(0, 3).map((svc: any) => (
                         <span
                           key={svc.id}
                           className="text-xs px-2.5 py-1 rounded-full font-medium"
@@ -538,9 +538,9 @@ function BranchesSection({ branches, onBranchClick }: { branches: any[]; onBranc
                           {getTitle(svc)}
                         </span>
                       ))}
-                      {(branch.Services?.length || 0) > 3 && (
+                      {(branch.Services?.filter((svc: any) => svc.price > 0).length || 0) > 3 && (
                         <span className="text-xs px-2.5 py-1 rounded-full font-medium bg-muted text-muted-foreground">
-                          +{branch.Services.length - 3}
+                          +{branch.Services.filter((svc: any) => svc.price > 0).length - 3}
                         </span>
                       )}
                     </div>

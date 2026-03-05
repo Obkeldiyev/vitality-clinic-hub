@@ -76,14 +76,14 @@ export default function BranchesPage() {
                     <h3 className="font-display font-bold text-primary text-lg mb-2 group-hover:text-clinic-red transition-colors">{branch.title}</h3>
                     <p className="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-3">{branch.description}</p>
                     <div className="flex flex-wrap gap-2 mb-4">
-                      {branch.Services?.slice(0, 3).map((svc: any) => (
+                      {branch.Services?.filter((svc: any) => svc.price > 0).slice(0, 3).map((svc: any) => (
                         <span key={svc.id} className="text-xs px-2.5 py-1 rounded-full font-medium" style={{ background: "hsl(var(--primary)/0.08)", color: "hsl(var(--primary))" }}>
                           {getTitle(svc)}
                         </span>
                       ))}
-                      {(branch.Services?.length || 0) > 3 && (
+                      {(branch.Services?.filter((svc: any) => svc.price > 0).length || 0) > 3 && (
                         <span className="text-xs px-2.5 py-1 rounded-full font-medium bg-muted text-muted-foreground">
-                          +{branch.Services.length - 3}
+                          +{branch.Services.filter((svc: any) => svc.price > 0).length - 3}
                         </span>
                       )}
                     </div>
@@ -205,7 +205,7 @@ export default function BranchesPage() {
                       <Activity className="w-5 h-5 text-blue-600" />
                     </div>
                     <div>
-                      <p className="text-2xl font-bold text-foreground">{selectedBranch.Services?.length || 0}</p>
+                      <p className="text-2xl font-bold text-foreground">{selectedBranch.Services?.filter((svc: any) => svc.price > 0).length || 0}</p>
                       <p className="text-xs text-muted-foreground">{t('services.label')}</p>
                     </div>
                   </div>
@@ -282,14 +282,14 @@ export default function BranchesPage() {
               )}
 
               {/* Services Section */}
-              {selectedBranch.Services && selectedBranch.Services.length > 0 && (
+              {selectedBranch.Services && selectedBranch.Services.filter((svc: any) => svc.price > 0).length > 0 && (
                 <div>
                   <h3 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
                     <Activity className="w-5 h-5" />
                     {t('services.title')}
                   </h3>
                   <div className="space-y-4">
-                    {selectedBranch.Services.map((svc: any) => {
+                    {selectedBranch.Services.filter((svc: any) => svc.price > 0).map((svc: any) => {
                       const svcImages = svc.media?.filter((m: any) => m.type?.includes("image")) || [];
                       return (
                         <div key={svc.id} className="bg-gradient-to-br from-blue-500/5 to-transparent rounded-xl p-5 border border-border hover:border-blue-500/30 transition-all">
