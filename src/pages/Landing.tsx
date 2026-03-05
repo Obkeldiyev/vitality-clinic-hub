@@ -180,20 +180,11 @@ function NewsModal({ newsItem, onClose }: { newsItem: any; onClose: () => void }
           {images.length > 0 && (
             <div className="relative h-96 overflow-hidden">
               <img src={getMediaUrl(images[0].url)} alt={getTitle(newsItem)} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-6">
-                <h2 className="font-display font-bold text-4xl text-white mb-2">{getTitle(newsItem)}</h2>
-                <p className="text-white/90 text-sm">{getDescription(newsItem)}</p>
-              </div>
             </div>
           )}
           <div className="p-6">
-            {!images.length && (
-              <>
-                <h2 className="font-display font-bold text-3xl text-primary mb-2">{getTitle(newsItem)}</h2>
-                <p className="text-muted-foreground text-sm mb-4">{getDescription(newsItem)}</p>
-              </>
-            )}
+            <h2 className="font-display font-bold text-3xl text-primary mb-2">{getTitle(newsItem)}</h2>
+            <p className="text-muted-foreground text-sm mb-4">{getDescription(newsItem)}</p>
             <p className="text-foreground leading-relaxed mb-6">{getContent(newsItem)}</p>
             
             {images.length > 1 && (

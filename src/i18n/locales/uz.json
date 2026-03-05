@@ -39,8 +39,8 @@
     "title": "ASL Medline — Sog'ligingizda ishonchli hamkor"
   },
   "branches": {
-    "label": "Bizning bo'limlar",
-    "title": "Ixtisoslashtirilgan markazlar",
+    "label": "",
+    "title": "Bizning bo'limlar",
     "equipment": "uskunalar",
     "loading": "Bo'limlar yuklanmoqda...",
     "seeAll": "Barcha bo'limlar",

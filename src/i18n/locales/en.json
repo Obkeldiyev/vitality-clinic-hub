@@ -39,8 +39,8 @@
     "title": "ASL Medline — Your Reliable Health Partner"
   },
   "branches": {
-    "label": "Our Departments",
-    "title": "Specialized Centers",
+    "label": "",
+    "title": "Our Departments",
     "equipment": "equipment units",
     "loading": "Loading departments...",
     "seeAll": "See All Departments",
