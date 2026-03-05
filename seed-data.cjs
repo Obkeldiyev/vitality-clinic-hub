@@ -15,7 +15,7 @@ const path = require('path');
 const FormData = require('form-data');
 
 // Configuration
-const API_BASE = 'http://localhost:9007'; // Change to your backend URL
+const API_BASE = 'https://aslmedline.uz/api'; // Production API
 let ACCESS_TOKEN = ''; // Will be set after login
 
 // ============================================================================
@@ -83,10 +83,27 @@ async function uploadWithMedia(endpoint, data, imageFiles = []) {
     }
   }
   
-  return request(endpoint, {
+  const url = `${API_BASE}${endpoint}`;
+  const headers = formData.getHeaders();
+  
+  if (ACCESS_TOKEN) {
+    headers['access_token'] = ACCESS_TOKEN;
+    headers['Authorization'] = `Bearer ${ACCESS_TOKEN}`;
+  }
+  
+  const response = await fetch(url, {
     method: 'POST',
+    headers,
     body: formData,
   });
+
+  const result = await response.json();
+  
+  if (!response.ok) {
+    throw new Error(`API Error: ${result.message || response.statusText}`);
+  }
+  
+  return result;
 }
 
 // ============================================================================
@@ -217,6 +234,14 @@ async function seedNews() {
       description_en: "Modern diagnostic equipment has arrived at our clinic",
       // Add image: ./seed-images/news1.jpg
     },
+    {
+      title_uz: "Yangi shifokorlar jamoasi",
+      title_ru: "Новая команда врачей",
+      title_en: "New team of doctors",
+      description_uz: "Klinikamizga tajribali mutaxassislar qo'shildi",
+      description_ru: "К нашей клинике присоединились опытные специалисты",
+      description_en: "Experienced specialists have joined our clinic",
+    },
   ];
   
   for (const news of newsItems) {
@@ -232,25 +257,84 @@ async function seedNews() {
   }
 }
 
+async function seedDoctors() {
+  console.log('\n👨‍⚕️ Seeding Doctors...');
+  
+  const doctors = [
+    {
+      first_name: "Alisher",
+      second_name: "Karimov",
+      third_name: "Akmalovich",
+      description: "Kardiolog, 15 yillik tajriba",
+      // Add image: ./seed-images/doctor1.jpg
+    },
+    {
+      first_name: "Dilnoza",
+      second_name: "Rahimova",
+      third_name: "Shavkatovna",
+      description: "Nevrolog, 10 yillik tajriba",
+    },
+  ];
+  
+  for (const doctor of doctors) {
+    try {
+      const images = doctor.image ? [doctor.image] : [];
+      delete doctor.image;
+      
+      await uploadWithMedia('/doctor', doctor, images);
+      console.log(`✅ Created: ${doctor.first_name} ${doctor.second_name}`);
+    } catch (err) {
+      console.error(`❌ Failed: ${doctor.first_name} ${doctor.second_name}`, err.message);
+    }
+  }
+}
+
+async function seedGallery() {
+  console.log('\n🖼️  Seeding Gallery...');
+  
+  const galleries = [
+    {
+      title: "Klinika interyeri",
+      description: "Zamonaviy va qulay muhit",
+      // Add images: ./seed-images/gallery1.jpg, ./seed-images/gallery2.jpg
+    },
+  ];
+  
+  for (const gallery of galleries) {
+    try {
+      const images = gallery.images ? gallery.images : [];
+      delete gallery.images;
+      
+      await uploadWithMedia('/gallery', gallery, images);
+      console.log(`✅ Created: ${gallery.title}`);
+    } catch (err) {
+      console.error(`❌ Failed: ${gallery.title}`, err.message);
+    }
+  }
+}
+
 // ============================================================================
 // Main Execution
 // ============================================================================
 
 async function main() {
-  console.log('🚀 Starting data seeding...\n');
+  console.log('🚀 Starting data seeding to https://aslmedline.uz...\n');
   
   try {
     // Step 1: Login
-    await login('admin', 'your_admin_password'); // UPDATE THIS!
+    console.log('⚠️  Please enter your admin credentials:');
+    const username = 'admin'; // UPDATE THIS!
+    const password = 'admin1234'; // UPDATE THIS!
     
-    // Step 2: Seed data
-    await seedAboutUs();
-    await seedStatistics();
-    await seedContacts();
+    await login(username, password);
+    
+    // Step 2: Seed only news, gallery, branches, doctors
     await seedBranches();
     await seedNews();
+    await seedDoctors();
+    await seedGallery();
     
-    console.log('\n✅ All data seeded successfully!');
+    console.log('\n✅ All data seeded successfully to https://aslmedline.uz!');
   } catch (err) {
     console.error('\n❌ Seeding failed:', err.message);
     process.exit(1);
@@ -262,4 +346,4 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { main, login, seedAboutUs, seedStatistics, seedContacts, seedBranches, seedNews };
+module.exports = { main, login, seedBranches, seedNews, seedDoctors, seedGallery };

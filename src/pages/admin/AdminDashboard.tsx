@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+﻿import { useState, useEffect, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, MEDIA_BASE, getMediaUrl, getRole } from "@/lib/api";
@@ -98,14 +98,15 @@ function Modal({ open, onClose, title, children }: any) {
 
 // ── Confirm Dialog ─────────────────────────────────────────────────────
 function ConfirmDialog({ open, onClose, onConfirm, message }: any) {
+  const { t } = useTranslation();
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
       <div className="bg-card rounded-2xl shadow-2xl p-6 w-full max-w-sm">
         <p className="text-foreground mb-6 text-center">{message}</p>
         <div className="flex gap-3">
-          <button onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors">Отмена</button>
-          <button onClick={onConfirm} className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white bg-destructive hover:opacity-90 transition-opacity">Удалить</button>
+          <button onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors">{t('admin.cancel')}</button>
+          <button onClick={onConfirm} className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white bg-destructive hover:opacity-90 transition-opacity">{t('admin.delete')}</button>
         </div>
       </div>
     </div>
@@ -114,6 +115,7 @@ function ConfirmDialog({ open, onClose, onConfirm, message }: any) {
 
 // ── Table ──────────────────────────────────────────────────────────────
 function DataTable({ columns, rows, onEdit, onDelete, onCustom }: any) {
+  const { t } = useTranslation();
   return (
     <div className="overflow-x-auto rounded-xl border border-border">
       <table className="w-full text-sm">
@@ -122,7 +124,7 @@ function DataTable({ columns, rows, onEdit, onDelete, onCustom }: any) {
             {columns.map((c: any) => (
               <th key={c.key} className="text-left px-4 py-3 text-muted-foreground font-semibold text-xs uppercase tracking-wide">{c.label}</th>
             ))}
-            <th className="text-right px-4 py-3 text-muted-foreground font-semibold text-xs uppercase tracking-wide">Действия</th>
+            <th className="text-right px-4 py-3 text-muted-foreground font-semibold text-xs uppercase tracking-wide">{t('admin.actions')}</th>
           </tr>
         </thead>
         <tbody>
@@ -152,7 +154,7 @@ function DataTable({ columns, rows, onEdit, onDelete, onCustom }: any) {
           ))}
           {!rows.length && (
             <tr>
-              <td colSpan={columns.length + 1} className="px-4 py-12 text-center text-muted-foreground">Нет данных</td>
+              <td colSpan={columns.length + 1} className="px-4 py-12 text-center text-muted-foreground">{t('admin.noData')}</td>
             </tr>
           )}
         </tbody>
@@ -171,7 +173,7 @@ function SectionHeader({ title, onAdd }: { title: string; onAdd?: () => void }) 
           onClick={onAdd}
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-primary-foreground bg-primary hover:opacity-90 transition-opacity"
         >
-          <Plus className="w-4 h-4" /> Добавить
+          <Plus className="w-4 h-4" /> {t('admin.add')}
         </button>
       )}
     </div>
@@ -200,19 +202,19 @@ function OverviewSection() {
   }, []);
 
   const cards = [
-    { label: "Отделения", count: counts.branches, icon: Building2, color: "hsl(225,75%,28%)" },
-    { label: "Врачи", count: counts.doctors, icon: Stethoscope, color: "hsl(200,80%,40%)" },
-    { label: "Новости", count: counts.news, icon: Newspaper, color: "hsl(160,60%,40%)" },
-    { label: "Галерея", count: counts.gallery, icon: ImageIcon, color: "hsl(280,60%,50%)" },
-    { label: "Статистика", count: counts.stats, icon: BarChart3, color: "hsl(30,80%,50%)" },
-    { label: "Отзывы", count: counts.feedback, icon: MessageSquare, color: "hsl(0,74%,55%)" },
-    { label: "Регистраторы", count: counts.receptions, icon: Users, color: "hsl(180,60%,40%)" },
-    { label: "Контакты", count: counts.contacts, icon: Phone, color: "hsl(240,60%,55%)" },
+    { label: t('admin.branches'), count: counts.branches, icon: Building2, color: "hsl(225,75%,28%)" },
+    { label: t('admin.doctors'), count: counts.doctors, icon: Stethoscope, color: "hsl(200,80%,40%)" },
+    { label: t('admin.news'), count: counts.news, icon: Newspaper, color: "hsl(160,60%,40%)" },
+    { label: t('admin.gallery'), count: counts.gallery, icon: ImageIcon, color: "hsl(280,60%,50%)" },
+    { label: t('admin.statistics'), count: counts.stats, icon: BarChart3, color: "hsl(30,80%,50%)" },
+    { label: t('admin.feedbacks'), count: counts.feedback, icon: MessageSquare, color: "hsl(0,74%,55%)" },
+    { label: t('admin.receptions'), count: counts.receptions, icon: Users, color: "hsl(180,60%,40%)" },
+    { label: t('admin.contacts'), count: counts.contacts, icon: Phone, color: "hsl(240,60%,55%)" },
   ];
 
   return (
     <div>
-      <SectionHeader title="Обзор" />
+      <SectionHeader title={t('admin.overview')} />
       <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
         {cards.map(({ label, count, icon: Icon, color }) => (
           <div key={label} className="bg-card rounded-2xl p-5 shadow-card border border-border flex items-center gap-4">
@@ -409,32 +411,32 @@ function BranchesSection() {
 
   return (
     <div>
-      <SectionHeader title="Отделения" onAdd={openCreate} />
+      <SectionHeader title={t('admin.branches')} onAdd={openCreate} />
       <DataTable
         columns={[
           { key: "id", label: "ID" },
-          { key: "title", label: "Название" },
-          { key: "Services", label: "Услуги", render: (r: any) => r.Services?.length || 0 },
-          { key: "Branch_techs", label: "Оборудование", render: (r: any) => r.Branch_techs?.length || 0 },
-          { key: "doctors", label: "Врачи", render: (r: any) => r.doctors?.length || 0 },
+          { key: "title", label: t('admin.title') },
+          { key: "Services", label: t('admin.services'), render: (r: any) => r.Services?.length || 0 },
+          { key: "Branch_techs", label: t('admin.equipment'), render: (r: any) => r.Branch_techs?.length || 0 },
+          { key: "doctors", label: t('admin.doctors'), render: (r: any) => r.doctors?.length || 0 },
         ]}
         rows={items}
         onEdit={openEdit}
         onDelete={(r: any) => setConfirm(r)}
       />
 
-      <Modal open={!!modal} onClose={() => setModal(null)} title={modal?.type === "create" ? "Создать отделение" : "Редактировать отделение"}>
+      <Modal open={!!modal} onClose={() => setModal(null)} title={modal?.type === "create" ? t('admin.createBranch') : t('admin.editBranchTitle')}>
         <div className="space-y-4">
           <div>
-            <label className="text-sm font-medium text-foreground mb-1 block">Название</label>
+            <label className="text-sm font-medium text-foreground mb-1 block">{t('admin.branchTitle')}</label>
             <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" />
           </div>
           <div>
-            <label className="text-sm font-medium text-foreground mb-1 block">Описание</label>
+            <label className="text-sm font-medium text-foreground mb-1 block">{t('admin.branchDescription')}</label>
             <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} rows={3} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none" />
           </div>
           <div>
-            <label className="text-sm font-medium text-foreground mb-1 block">Медиа отделения</label>
+            <label className="text-sm font-medium text-foreground mb-1 block">{t('admin.branchMediaLabel')}</label>
             <div className="space-y-2">
               <input 
                 type="file" 
@@ -451,7 +453,7 @@ function BranchesSection() {
               />
               {branchFiles.length > 0 && (
                 <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">{branchFiles.length} файлов выбрано</p>
+                  <p className="text-xs text-muted-foreground">{branchFiles.length} {t('admin.filesSelectedCount')}</p>
                   {branchFiles.map((f, idx) => f && (
                     <div key={idx} className="flex items-center justify-between bg-muted/50 px-2 py-1 rounded text-xs">
                       <span>{f.name} ({(f.size / 1024).toFixed(1)} KB)</span>
@@ -468,8 +470,8 @@ function BranchesSection() {
           {/* Services */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-semibold text-foreground">Услуги</label>
-              <button onClick={addService} className="text-xs px-3 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors">+ Услуга</button>
+              <label className="text-sm font-semibold text-foreground">{t('admin.services')}</label>
+              <button onClick={addService} className="text-xs px-3 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors">{t('admin.addServiceBtn')}</button>
             </div>
             {services.map((s, i) => (
               <div key={s.key || s.id} className="bg-muted/50 rounded-xl p-3 mb-2 space-y-2">
@@ -479,7 +481,7 @@ function BranchesSection() {
                   <input placeholder="UZ" value={s.title_uz} onChange={e => setServices(prev => prev.map((x, j) => j === i ? { ...x, title_uz: e.target.value } : x))} className="px-2 py-1.5 rounded-lg border border-border bg-background text-xs focus:outline-none" />
                 </div>
                 <div className="flex gap-2">
-                  <input type="number" placeholder="Цена" value={s.price} onChange={e => setServices(prev => prev.map((x, j) => j === i ? { ...x, price: e.target.value } : x))} className="flex-1 px-2 py-1.5 rounded-lg border border-border bg-background text-xs focus:outline-none" />
+                  <input type="number" placeholder={t('admin.price')} value={s.price} onChange={e => setServices(prev => prev.map((x, j) => j === i ? { ...x, price: e.target.value } : x))} className="flex-1 px-2 py-1.5 rounded-lg border border-border bg-background text-xs focus:outline-none" />
                   <input 
                     type="file" 
                     accept="image/*,video/*" 
@@ -496,7 +498,7 @@ function BranchesSection() {
                   <button onClick={() => setServices(prev => prev.filter((_, j) => j !== i))} className="text-destructive hover:opacity-70"><X className="w-3.5 h-3.5" /></button>
                 </div>
                 {s._files && s._files.length > 0 && (
-                  <p className="text-xs text-muted-foreground">{s._files.length} файлов</p>
+                  <p className="text-xs text-muted-foreground">{s._files.length} {t('admin.filesCount')}</p>
                 )}
               </div>
             ))}
@@ -505,16 +507,16 @@ function BranchesSection() {
           {/* Techs */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-semibold text-foreground">Оборудование</label>
-              <button onClick={addTech} className="text-xs px-3 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors">+ Техника</button>
+              <label className="text-sm font-semibold text-foreground">{t('admin.equipment')}</label>
+              <button onClick={addTech} className="text-xs px-3 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors">{t('admin.addEquipmentBtn')}</button>
             </div>
             {techs.map((t, i) => (
               <div key={t.key || t.id} className="bg-muted/50 rounded-xl p-3 mb-2 space-y-2">
                 <div className="flex gap-2">
-                  <input placeholder="Название" value={t.title} onChange={e => setTechs(prev => prev.map((x, j) => j === i ? { ...x, title: e.target.value } : x))} className="flex-1 px-2 py-1.5 rounded-lg border border-border bg-background text-xs focus:outline-none" />
+                  <input placeholder={t('admin.branchTitle')} value={t.title} onChange={e => setTechs(prev => prev.map((x, j) => j === i ? { ...x, title: e.target.value } : x))} className="flex-1 px-2 py-1.5 rounded-lg border border-border bg-background text-xs focus:outline-none" />
                   <button onClick={() => setTechs(prev => prev.filter((_, j) => j !== i))} className="text-destructive hover:opacity-70"><X className="w-3.5 h-3.5" /></button>
                 </div>
-                <input placeholder="Описание" value={t.description} onChange={e => setTechs(prev => prev.map((x, j) => j === i ? { ...x, description: e.target.value } : x))} className="w-full px-2 py-1.5 rounded-lg border border-border bg-background text-xs focus:outline-none" />
+                <input placeholder={t('admin.description')} value={t.description} onChange={e => setTechs(prev => prev.map((x, j) => j === i ? { ...x, description: e.target.value } : x))} className="w-full px-2 py-1.5 rounded-lg border border-border bg-background text-xs focus:outline-none" />
                 <input 
                   type="file" 
                   accept="image/*,video/*" 
@@ -529,22 +531,22 @@ function BranchesSection() {
                   className="text-xs text-muted-foreground" 
                 />
                 {t._files && t._files.length > 0 && (
-                  <p className="text-xs text-muted-foreground">{t._files.length} файлов</p>
+                  <p className="text-xs text-muted-foreground">{t._files.length} {t('admin.filesCount')}</p>
                 )}
               </div>
             ))}
           </div>
 
           <div className="flex gap-3 pt-2">
-            <button onClick={() => setModal(null)} className="flex-1 py-2.5 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors">Отмена</button>
+            <button onClick={() => setModal(null)} className="flex-1 py-2.5 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors">{t('admin.cancel')}</button>
             <button onClick={save} disabled={loading} className="flex-1 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-60">
-              {loading ? "Сохранение..." : "Сохранить"}
+              {loading ? t('admin.saving') : t('admin.save')}
             </button>
           </div>
         </div>
       </Modal>
 
-      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message={`Удалить отделение "${confirm?.title}"?`} />
+      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message={`${t('admin.deleteBranchConfirm')} "${confirm?.title}"?`} />
     </div>
   );
 }
@@ -590,39 +592,39 @@ function DoctorsSection() {
 
   return (
     <div>
-      <SectionHeader title="Врачи" onAdd={() => { setForm({ first_name: "", second_name: "", third_name: "", description: "", branch_id: "" }); setDoctorFiles([]); setModal({ type: "create" }); }} />
+      <SectionHeader title={t('admin.doctors')} onAdd={() => { setForm({ first_name: "", second_name: "", third_name: "", description: "", branch_id: "" }); setDoctorFiles([]); setModal({ type: "create" }); }} />
       <DataTable
         columns={[
           { key: "id", label: "ID", render: (r: any) => r.id.slice(0, 8) + "..." },
-          { key: "first_name", label: "Имя", render: (r: any) => `${r.first_name} ${r.second_name}` },
-          { key: "description", label: "Описание", render: (r: any) => (r.description || "").slice(0, 40) + "..." },
-          { key: "branch", label: "Отделение", render: (r: any) => r.branch?.title || r.branch_id },
+          { key: "first_name", label: t('admin.name'), render: (r: any) => `${r.first_name} ${r.second_name}` },
+          { key: "description", label: t('admin.description'), render: (r: any) => (r.description || "").slice(0, 40) + "..." },
+          { key: "branch", label: t('admin.branch'), render: (r: any) => r.branch?.title || r.branch_id },
         ]}
         rows={items}
         onEdit={(r: any) => { setForm({ first_name: r.first_name, second_name: r.second_name, third_name: r.third_name || "", description: r.description, branch_id: String(r.branch_id) }); setDoctorFiles([]); setModal({ type: "edit", item: r }); }}
         onDelete={(r: any) => setConfirm(r)}
       />
-      <Modal open={!!modal} onClose={() => setModal(null)} title={modal?.type === "create" ? "Добавить врача" : "Редактировать врача"}>
+      <Modal open={!!modal} onClose={() => setModal(null)} title={modal?.type === "create" ? t('admin.createDoctor') : t('admin.editDoctor')}>
         <div className="space-y-3">
-          {[["first_name", "Имя"], ["second_name", "Фамилия"], ["third_name", "Отчество (необяз.)"]].map(([k, label]) => (
+          {[["first_name", t('admin.firstName')], ["second_name", t('admin.lastName')], ["third_name", t('admin.middleNameOptional')]].map(([k, label]) => (
             <div key={k}>
               <label className="text-xs font-medium text-muted-foreground mb-1 block">{label}</label>
               <input value={(form as any)[k]} onChange={e => setForm({ ...form, [k]: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" />
             </div>
           ))}
           <div>
-            <label className="text-xs font-medium text-muted-foreground mb-1 block">Описание / Специализация</label>
+            <label className="text-xs font-medium text-muted-foreground mb-1 block">{t('admin.descriptionSpecialization')}</label>
             <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} rows={3} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none" />
           </div>
           <div>
-            <label className="text-xs font-medium text-muted-foreground mb-1 block">Отделение</label>
+            <label className="text-xs font-medium text-muted-foreground mb-1 block">{t('admin.branch')}</label>
             <select value={form.branch_id} onChange={e => setForm({ ...form, branch_id: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none">
-              <option value="">Выберите отделение</option>
+              <option value="">{t('admin.selectDepartment')}</option>
               {branches.map((b: any) => <option key={b.id} value={b.id}>{b.title}</option>)}
             </select>
           </div>
           <div>
-            <label className="text-xs font-medium text-muted-foreground mb-1 block">Фото врача</label>
+            <label className="text-xs font-medium text-muted-foreground mb-1 block">{t('admin.doctorPhotoLabel')}</label>
             <div className="space-y-2">
               <input 
                 type="file" 
@@ -639,7 +641,7 @@ function DoctorsSection() {
               />
               {doctorFiles.length > 0 && (
                 <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">{doctorFiles.length} файлов выбрано</p>
+                  <p className="text-xs text-muted-foreground">{doctorFiles.length} {t('admin.filesSelectedCount')}</p>
                   {doctorFiles.map((f, idx) => f && (
                     <div key={idx} className="flex items-center justify-between bg-muted/50 px-2 py-1 rounded text-xs">
                       <span>{f.name} ({(f.size / 1024).toFixed(1)} KB)</span>
@@ -653,14 +655,14 @@ function DoctorsSection() {
             </div>
           </div>
           <div className="flex gap-3 pt-2">
-            <button onClick={() => setModal(null)} className="flex-1 py-2.5 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors">Отмена</button>
+            <button onClick={() => setModal(null)} className="flex-1 py-2.5 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors">{t('admin.cancel')}</button>
             <button onClick={save} disabled={loading} className="flex-1 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 disabled:opacity-60">
-              {loading ? "Сохранение..." : "Сохранить"}
+              {loading ? t('admin.saving') : t('admin.save')}
             </button>
           </div>
         </div>
       </Modal>
-      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message={`Удалить врача "${confirm?.first_name} ${confirm?.second_name}"?`} />
+      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message={`${t('admin.deleteDoctorConfirm')} "${confirm?.first_name} ${confirm?.second_name}"?`} />
     </div>
   );
 }
@@ -697,7 +699,7 @@ function NewsSection() {
 
   return (
     <div>
-      <SectionHeader title="Новости" onAdd={openCreate} />
+      <SectionHeader title={t('admin.newsTitle')} onAdd={openCreate} />
       <div className="grid md:grid-cols-3 gap-4 mb-4">
         {items.map((item: any) => {
           const img = item.media?.find((m: any) => m.type === "image" || m.type?.includes("image"));
@@ -711,7 +713,7 @@ function NewsSection() {
               <div className="p-3">
                 <p className="text-sm font-semibold text-primary truncate">{item.title_ru || item.title_en}</p>
                 <p className="text-xs text-muted-foreground line-clamp-2">{item.description_ru || item.description_en}</p>
-                <p className="text-xs text-muted-foreground mt-1">{item.media?.length || 0} медиа</p>
+                <p className="text-xs text-muted-foreground mt-1">{item.media?.length || 0} {t('admin.mediaCount')}</p>
               </div>
               <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <button onClick={(e) => { e.stopPropagation(); openEdit(item); }} className="p-1.5 rounded-lg bg-white/90 text-primary shadow"><Pencil className="w-3 h-3" /></button>
@@ -750,18 +752,18 @@ function NewsSection() {
         </Modal>
       )}
 
-      <Modal open={modal?.type === "create" || modal?.type === "edit"} onClose={() => setModal(null)} title={modal?.type === "create" ? "Добавить новость" : "Редактировать новость"}>
+      <Modal open={modal?.type === "create" || modal?.type === "edit"} onClose={() => setModal(null)} title={modal?.type === "create" ? t('admin.addNewsTitle') : t('admin.editNewsTitle')}>
         <div className="space-y-3">
-          {[["title_ru", "Заголовок RU"], ["title_en", "Заголовок EN"], ["title_uz", "Заголовок UZ"]].map(([k, label]) => (
+          {[["title_ru", t('admin.headerRU')], ["title_en", t('admin.headerEN')], ["title_uz", t('admin.headerUZ')]].map(([k, label]) => (
             <div key={k}><label className="text-xs font-medium text-muted-foreground mb-1 block">{label}</label>
               <input value={(form as any)[k]} onChange={e => setForm({ ...form, [k]: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" /></div>
           ))}
-          {[["description_ru", "Текст RU"], ["description_en", "Текст EN"], ["description_uz", "Текст UZ"]].map(([k, label]) => (
+          {[["description_ru", t('admin.textRU')], ["description_en", t('admin.textEN')], ["description_uz", t('admin.textUZ')]].map(([k, label]) => (
             <div key={k}><label className="text-xs font-medium text-muted-foreground mb-1 block">{label}</label>
               <textarea value={(form as any)[k]} onChange={e => setForm({ ...form, [k]: e.target.value })} rows={3} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none" /></div>
           ))}
           <div>
-            <label className="text-xs font-medium text-muted-foreground mb-1 block">Изображения</label>
+            <label className="text-xs font-medium text-muted-foreground mb-1 block">{t('admin.images')}</label>
             <div className="space-y-2">
               <input 
                 type="file" 
@@ -778,7 +780,7 @@ function NewsSection() {
               />
               {files.length > 0 && (
                 <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">{files.length} файлов выбрано</p>
+                  <p className="text-xs text-muted-foreground">{files.length} {t('admin.filesSelectedCount')}</p>
                   {files.map((f, idx) => f && (
                     <div key={idx} className="flex items-center justify-between bg-muted/50 px-2 py-1 rounded text-xs">
                       <span>{f.name} ({(f.size / 1024).toFixed(1)} KB)</span>
@@ -792,12 +794,12 @@ function NewsSection() {
             </div>
           </div>
           <div className="flex gap-3 pt-2">
-            <button onClick={() => setModal(null)} className="flex-1 py-2.5 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors">Отмена</button>
-            <button onClick={save} disabled={loading} className="flex-1 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 disabled:opacity-60">{loading ? "..." : "Сохранить"}</button>
+            <button onClick={() => setModal(null)} className="flex-1 py-2.5 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors">{t('admin.cancel')}</button>
+            <button onClick={save} disabled={loading} className="flex-1 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 disabled:opacity-60">{loading ? "..." : t('admin.save')}</button>
           </div>
         </div>
       </Modal>
-      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message={`Удалить новость?`} />
+      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message={t('admin.deleteNewsConfirm')} />
     </div>
   );
 }
@@ -830,7 +832,7 @@ function GalleryAdminSection() {
 
   return (
     <div>
-      <SectionHeader title="Галерея" onAdd={() => { setForm({ title_uz: "", title_ru: "", title_en: "" }); setFiles([]); setModal({ type: "create" }); }} />
+      <SectionHeader title={t('admin.galleryTitle')} onAdd={() => { setForm({ title_uz: "", title_ru: "", title_en: "" }); setFiles([]); setModal({ type: "create" }); }} />
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
         {items.map((g: any) => (
           <div key={g.id} className="group relative bg-card rounded-xl overflow-hidden shadow-card border border-border">
@@ -841,7 +843,7 @@ function GalleryAdminSection() {
             </div>
             <div className="p-3">
               <p className="text-sm font-semibold text-primary truncate">{g.title_ru || g.title_en}</p>
-              <p className="text-xs text-muted-foreground">{g.media?.length || 0} медиа</p>
+              <p className="text-xs text-muted-foreground">{g.media?.length || 0} {t('admin.mediaCount')}</p>
             </div>
             <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
               <button onClick={() => { setForm({ title_uz: g.title_uz, title_ru: g.title_ru, title_en: g.title_en }); setFiles([]); setModal({ type: "edit", item: g }); }} className="p-1.5 rounded-lg bg-white/90 text-primary shadow"><Pencil className="w-3 h-3" /></button>
@@ -850,14 +852,14 @@ function GalleryAdminSection() {
           </div>
         ))}
       </div>
-      <Modal open={!!modal} onClose={() => setModal(null)} title={modal?.type === "create" ? "Добавить галерею" : "Редактировать галерею"}>
+      <Modal open={!!modal} onClose={() => setModal(null)} title={modal?.type === "create" ? t('admin.addGalleryTitle') : t('admin.editGalleryTitle')}>
         <div className="space-y-3">
-          {[["title_ru", "Название RU"], ["title_en", "Название EN"], ["title_uz", "Название UZ"]].map(([k, label]) => (
+          {[["title_ru", t('admin.nameRU')], ["title_en", t('admin.nameEN')], ["title_uz", t('admin.nameUZ')]].map(([k, label]) => (
             <div key={k}><label className="text-xs font-medium text-muted-foreground mb-1 block">{label}</label>
               <input value={(form as any)[k]} onChange={e => setForm({ ...form, [k]: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" /></div>
           ))}
           <div>
-            <label className="text-xs font-medium text-muted-foreground mb-1 block">Медиафайлы</label>
+            <label className="text-xs font-medium text-muted-foreground mb-1 block">{t('admin.mediaFiles')}</label>
             <div className="space-y-2">
               <input 
                 type="file" 
@@ -874,7 +876,7 @@ function GalleryAdminSection() {
               />
               {files.length > 0 && (
                 <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">{files.length} файлов выбрано</p>
+                  <p className="text-xs text-muted-foreground">{files.length} {t('admin.filesSelectedCount')}</p>
                   {files.map((f, idx) => f && (
                     <div key={idx} className="flex items-center justify-between bg-muted/50 px-2 py-1 rounded text-xs">
                       <span>{f.name} ({(f.size / 1024).toFixed(1)} KB)</span>
@@ -888,12 +890,12 @@ function GalleryAdminSection() {
             </div>
           </div>
           <div className="flex gap-3 pt-2">
-            <button onClick={() => setModal(null)} className="flex-1 py-2.5 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors">Отмена</button>
-            <button onClick={save} disabled={loading} className="flex-1 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 disabled:opacity-60">{loading ? "..." : "Сохранить"}</button>
+            <button onClick={() => setModal(null)} className="flex-1 py-2.5 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors">{t('admin.cancel')}</button>
+            <button onClick={save} disabled={loading} className="flex-1 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 disabled:opacity-60">{loading ? "..." : t('admin.save')}</button>
           </div>
         </div>
       </Modal>
-      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message="Удалить элемент галереи?" />
+      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message=t('admin.deleteGalleryConfirm') />
     </div>
   );
 }
@@ -923,7 +925,7 @@ function StatisticsSection() {
 
   return (
     <div>
-      <SectionHeader title="Статистика" onAdd={() => { setForm({ title_uz: "", title_ru: "", title_en: "", number: "" }); setModal({ type: "create" }); }} />
+      <SectionHeader title={t('admin.statisticsTitle')} onAdd={() => { setForm({ title_uz: "", title_ru: "", title_en: "", number: "" }); setModal({ type: "create" }); }} />
       <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-4">
         {items.map((s: any) => (
           <div key={s.id} className="stat-card relative group">
@@ -936,21 +938,21 @@ function StatisticsSection() {
           </div>
         ))}
       </div>
-      <Modal open={!!modal} onClose={() => setModal(null)} title={modal?.type === "create" ? "Добавить статистику" : "Редактировать"}>
+      <Modal open={!!modal} onClose={() => setModal(null)} title={modal?.type === "create" ? t('admin.addStatisticTitle') : t('admin.editTitle')}>
         <div className="space-y-3">
-          {[["title_ru", "Название RU"], ["title_en", "Название EN"], ["title_uz", "Название UZ"]].map(([k, label]) => (
+          {[["title_ru", t('admin.nameRU')], ["title_en", t('admin.nameEN')], ["title_uz", t('admin.nameUZ')]].map(([k, label]) => (
             <div key={k}><label className="text-xs font-medium text-muted-foreground mb-1 block">{label}</label>
               <input value={(form as any)[k]} onChange={e => setForm({ ...form, [k]: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" /></div>
           ))}
-          <div><label className="text-xs font-medium text-muted-foreground mb-1 block">Число</label>
+          <div><label className="text-xs font-medium text-muted-foreground mb-1 block">{t('admin.numberLabel')}</label>
             <input type="number" value={form.number} onChange={e => setForm({ ...form, number: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" /></div>
           <div className="flex gap-3 pt-2">
-            <button onClick={() => setModal(null)} className="flex-1 py-2.5 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors">Отмена</button>
-            <button onClick={save} disabled={loading} className="flex-1 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 disabled:opacity-60">{loading ? "..." : "Сохранить"}</button>
+            <button onClick={() => setModal(null)} className="flex-1 py-2.5 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors">{t('admin.cancel')}</button>
+            <button onClick={save} disabled={loading} className="flex-1 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 disabled:opacity-60">{loading ? "..." : t('admin.save')}</button>
           </div>
         </div>
       </Modal>
-      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message="Удалить показатель статистики?" />
+      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message=t('admin.deleteStatisticConfirm') />
     </div>
   );
 }
@@ -968,13 +970,13 @@ function FeedbackAdminSection() {
 
   return (
     <div>
-      <SectionHeader title="Отзывы" />
+      <SectionHeader title={t('admin.feedbackTitle')} />
       <DataTable
         columns={[
-          { key: "full_name", label: "Имя" },
-          { key: "phone_number", label: "Телефон" },
-          { key: "content", label: "Отзыв", render: (r: any) => r.content?.slice(0, 50) + "..." },
-          { key: "isApproved", label: "Статус", render: (r: any) => <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${r.isApproved ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>{r.isApproved ? "Одобрен" : "Ожидание"}</span> },
+          { key: "full_name", label: t('admin.name') },
+          { key: "phone_number", label: t('admin.phoneNumber') },
+          { key: "content", label: t('admin.review'), render: (r: any) => r.content?.slice(0, 50) + "..." },
+          { key: "isApproved", label: t('admin.statusLabel'), render: (r: any) => <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${r.isApproved ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>{r.isApproved ? t('admin.approved') : t('admin.waiting')}</span> },
         ]}
         rows={items}
         onDelete={(r: any) => setConfirm(r)}
@@ -984,7 +986,7 @@ function FeedbackAdminSection() {
           </button>
         )}
       />
-      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message="Удалить отзыв?" />
+      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message=t('admin.deleteFeedbackConfirm') />
     </div>
   );
 }
@@ -1016,23 +1018,23 @@ function ReceptionsSection() {
 
   return (
     <div>
-      <SectionHeader title="Регистраторы" onAdd={() => { setForm({ first_name: "", second_name: "", username: "", password: "" }); setFiles([]); setModal({ type: "create" }); }} />
+      <SectionHeader title={t('admin.receptionistsTitle')} onAdd={() => { setForm({ first_name: "", second_name: "", username: "", password: "" }); setFiles([]); setModal({ type: "create" }); }} />
       <DataTable
         columns={[
           { key: "id", label: "ID", render: (r: any) => r.id.slice(0, 8) + "..." },
-          { key: "first_name", label: "Имя", render: (r: any) => `${r.first_name} ${r.second_name}` },
-          { key: "username", label: "Логин" },
+          { key: "first_name", label: t('admin.name'), render: (r: any) => `${r.first_name} ${r.second_name}` },
+          { key: "username", label: t('admin.loginLabel') },
         ]}
         rows={items} onDelete={(r: any) => setConfirm(r)}
       />
-      <Modal open={!!modal} onClose={() => setModal(null)} title="Добавить регистратора">
+      <Modal open={!!modal} onClose={() => setModal(null)} title=t('admin.addReceptionistTitle')>
         <div className="space-y-3">
-          {[["first_name", "Имя"], ["second_name", "Фамилия"], ["username", "Логин"], ["password", "Пароль"]].map(([k, label]) => (
+          {[["first_name", t('admin.firstName')], ["second_name", t('admin.lastName')], ["username", t('admin.loginLabel')], ["password", t('admin.password')]].map(([k, label]) => (
             <div key={k}><label className="text-xs font-medium text-muted-foreground mb-1 block">{label}</label>
               <input type={k === "password" ? "password" : "text"} value={(form as any)[k]} onChange={e => setForm({ ...form, [k]: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" /></div>
           ))}
           <div>
-            <label className="text-xs font-medium text-muted-foreground mb-1 block">Фото</label>
+            <label className="text-xs font-medium text-muted-foreground mb-1 block">{t('admin.photoLabel')}</label>
             <div className="space-y-2">
               <input 
                 type="file" 
@@ -1049,7 +1051,7 @@ function ReceptionsSection() {
               />
               {files.length > 0 && (
                 <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">{files.length} файлов выбрано</p>
+                  <p className="text-xs text-muted-foreground">{files.length} {t('admin.filesSelectedCount')}</p>
                   {files.map((f, idx) => f && (
                     <div key={idx} className="flex items-center justify-between bg-muted/50 px-2 py-1 rounded text-xs">
                       <span>{f.name} ({(f.size / 1024).toFixed(1)} KB)</span>
@@ -1063,12 +1065,12 @@ function ReceptionsSection() {
             </div>
           </div>
           <div className="flex gap-3 pt-2">
-            <button onClick={() => setModal(null)} className="flex-1 py-2.5 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors">Отмена</button>
-            <button onClick={save} disabled={loading} className="flex-1 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 disabled:opacity-60">{loading ? "..." : "Создать"}</button>
+            <button onClick={() => setModal(null)} className="flex-1 py-2.5 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors">{t('admin.cancel')}</button>
+            <button onClick={save} disabled={loading} className="flex-1 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 disabled:opacity-60">{loading ? "..." : t('admin.create')}</button>
           </div>
         </div>
       </Modal>
-      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message={`Удалить регистратора "${confirm?.first_name}"?`} />
+      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message={`${t('admin.deleteReceptionistConfirm')} "${confirm?.first_name}"?`} />
     </div>
   );
 }
@@ -1096,30 +1098,30 @@ function AboutAdminSection() {
 
   return (
     <div>
-      <SectionHeader title="О нас" onAdd={() => { setForm({ title_uz: "", title_ru: "", title_en: "", content_uz: "", content_ru: "", content_en: "" }); setModal({ type: "create" }); }} />
+      <SectionHeader title={t('admin.aboutTitle')} onAdd={() => { setForm({ title_uz: "", title_ru: "", title_en: "", content_uz: "", content_ru: "", content_en: "" }); setModal({ type: "create" }); }} />
       <DataTable
-        columns={[{ key: "id", label: "ID" }, { key: "title_ru", label: "Заголовок" }, { key: "content_ru", label: "Текст", render: (r: any) => r.content_ru?.slice(0, 60) + "..." }]}
+        columns={[{ key: "id", label: "ID" }, { key: "title_ru", label: t('admin.headerLabel') }, { key: "content_ru", label: t('admin.textLabel'), render: (r: any) => r.content_ru?.slice(0, 60) + "..." }]}
         rows={items}
         onEdit={(r: any) => { setForm({ title_uz: r.title_uz, title_ru: r.title_ru, title_en: r.title_en, content_uz: r.content_uz, content_ru: r.content_ru, content_en: r.content_en }); setModal({ type: "edit", item: r }); }}
         onDelete={(r: any) => setConfirm(r)}
       />
-      <Modal open={!!modal} onClose={() => setModal(null)} title={modal?.type === "create" ? "Добавить раздел" : "Редактировать"}>
+      <Modal open={!!modal} onClose={() => setModal(null)} title={modal?.type === "create" ? t('admin.addSectionTitle') : t('admin.editTitle')}>
         <div className="space-y-3">
-          {[["title_ru", "Заголовок RU"], ["title_en", "Заголовок EN"], ["title_uz", "Заголовок UZ"]].map(([k, label]) => (
+          {[["title_ru", t('admin.headerRU')], ["title_en", t('admin.headerEN')], ["title_uz", t('admin.headerUZ')]].map(([k, label]) => (
             <div key={k}><label className="text-xs font-medium text-muted-foreground mb-1 block">{label}</label>
               <input value={(form as any)[k]} onChange={e => setForm({ ...form, [k]: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" /></div>
           ))}
-          {[["content_ru", "Текст RU"], ["content_en", "Текст EN"], ["content_uz", "Текст UZ"]].map(([k, label]) => (
+          {[["content_ru", t('admin.textRU')], ["content_en", t('admin.textEN')], ["content_uz", t('admin.textUZ')]].map(([k, label]) => (
             <div key={k}><label className="text-xs font-medium text-muted-foreground mb-1 block">{label}</label>
               <textarea value={(form as any)[k]} onChange={e => setForm({ ...form, [k]: e.target.value })} rows={4} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none" /></div>
           ))}
           <div className="flex gap-3 pt-2">
-            <button onClick={() => setModal(null)} className="flex-1 py-2.5 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors">Отмена</button>
-            <button onClick={save} disabled={loading} className="flex-1 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 disabled:opacity-60">{loading ? "..." : "Сохранить"}</button>
+            <button onClick={() => setModal(null)} className="flex-1 py-2.5 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors">{t('admin.cancel')}</button>
+            <button onClick={save} disabled={loading} className="flex-1 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 disabled:opacity-60">{loading ? "..." : t('admin.save')}</button>
           </div>
         </div>
       </Modal>
-      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message="Удалить раздел?" />
+      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message=t('admin.deleteSectionConfirm') />
     </div>
   );
 }
@@ -1147,26 +1149,26 @@ function ContactsAdminSection() {
 
   return (
     <div>
-      <SectionHeader title="Контакты" onAdd={() => { setForm({ type: "", contact: "" }); setModal({ type: "create" }); }} />
+      <SectionHeader title={t('admin.contactsTitle')} onAdd={() => { setForm({ type: "", contact: "" }); setModal({ type: "create" }); }} />
       <DataTable
-        columns={[{ key: "id", label: "ID" }, { key: "type", label: "Тип" }, { key: "contact", label: "Значение" }]}
+        columns={[{ key: "id", label: "ID" }, { key: "type", label: t('admin.typeLabel') }, { key: "contact", label: t('admin.valueLabel') }]}
         rows={items}
         onEdit={(r: any) => { setForm({ type: r.type, contact: r.contact }); setModal({ type: "edit", item: r }); }}
         onDelete={(r: any) => setConfirm(r)}
       />
-      <Modal open={!!modal} onClose={() => setModal(null)} title={modal?.type === "create" ? "Добавить контакт" : "Редактировать"}>
+      <Modal open={!!modal} onClose={() => setModal(null)} title={modal?.type === "create" ? t('admin.addContactTitle') : t('admin.editTitle')}>
         <div className="space-y-3">
-          <div><label className="text-xs font-medium text-muted-foreground mb-1 block">Тип (phone, email, address...)</label>
+          <div><label className="text-xs font-medium text-muted-foreground mb-1 block">{t('admin.typeLabel')}</label>
             <input value={form.type} onChange={e => setForm({ ...form, type: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" /></div>
-          <div><label className="text-xs font-medium text-muted-foreground mb-1 block">Значение</label>
+          <div><label className="text-xs font-medium text-muted-foreground mb-1 block">{t('admin.valueLabel')}</label>
             <input value={form.contact} onChange={e => setForm({ ...form, contact: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" /></div>
           <div className="flex gap-3 pt-2">
-            <button onClick={() => setModal(null)} className="flex-1 py-2.5 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors">Отмена</button>
-            <button onClick={save} disabled={loading} className="flex-1 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 disabled:opacity-60">{loading ? "..." : "Сохранить"}</button>
+            <button onClick={() => setModal(null)} className="flex-1 py-2.5 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors">{t('admin.cancel')}</button>
+            <button onClick={save} disabled={loading} className="flex-1 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 disabled:opacity-60">{loading ? "..." : t('admin.save')}</button>
           </div>
         </div>
       </Modal>
-      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message="Удалить контакт?" />
+      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message=t('admin.deleteContactConfirm') />
     </div>
   );
 }
@@ -1233,10 +1235,10 @@ export default function AdminDashboard() {
             <Menu className="w-5 h-5 text-foreground" />
           </button>
           <h1 className="font-display font-bold text-primary text-lg">
-            {SECTIONS.find(s => s.key === active)?.label || "Панель"}
+            {SECTIONS.find(s => s.key === active)?.label || t('admin.panelTitle')}
           </h1>
           <div className="ml-auto flex items-center gap-2">
-            <span className="text-xs text-muted-foreground bg-muted px-3 py-1.5 rounded-full font-medium">Администратор</span>
+            <span className="text-xs text-muted-foreground bg-muted px-3 py-1.5 rounded-full font-medium">{t('admin.administrator')}</span>
           </div>
         </header>
 

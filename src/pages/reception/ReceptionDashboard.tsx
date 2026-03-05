@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+﻿import { useState, useEffect, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, getRole, MEDIA_BASE, getMediaUrl } from "@/lib/api";
@@ -208,7 +208,7 @@ export default function ReceptionDashboard() {
               {!patients.length && (
                 <div className="col-span-3 text-center py-20 text-muted-foreground">
                   <Users className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                  <p>Нет активных пациентов</p>
+                  <p>{t('admin.noActivePatients')}</p>
                 </div>
               )}
             </div>
@@ -220,7 +220,7 @@ export default function ReceptionDashboard() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border bg-muted">
-                    {["Имя", "Фамилия", "Телефон", "Проблема"].map(h => (
+                    {[t('admin.firstName'), t('admin.lastName'), t('admin.phoneNumber'), t('admin.problem')].map(h => (
                       <th key={h} className="text-left px-4 py-3 text-muted-foreground font-semibold text-xs uppercase tracking-wide">{h}</th>
                     ))}
                   </tr>
@@ -235,7 +235,7 @@ export default function ReceptionDashboard() {
                     </tr>
                   ))}
                   {!history.length && (
-                    <tr><td colSpan={4} className="px-4 py-12 text-center text-muted-foreground">История пуста</td></tr>
+                    <tr><td colSpan={4} className="px-4 py-12 text-center text-muted-foreground">{t('admin.historyEmpty')}</td></tr>
                   )}
                 </tbody>
               </table>
@@ -245,39 +245,39 @@ export default function ReceptionDashboard() {
       </div>
 
       {/* Create patient modal */}
-      <Modal open={createModal} onClose={() => setCreateModal(false)} title="Зарегистрировать пациента">
+      <Modal open={createModal} onClose={() => setCreateModal(false)} title=t('admin.registerPatient')>
         <div className="space-y-3">
-          {[["first_name", "Имя", "text"], ["second_name", "Фамилия", "text"], ["third_name", "Отчество (необяз.)", "text"], ["phone_number", "Номер телефона", "tel"]].map(([k, label, type]) => (
+          {[["first_name", t('admin.firstName'), "text"], ["second_name", t('admin.lastName'), "text"], ["third_name", t('admin.middleNameOptional'), "text"], ["phone_number", t('admin.phoneNumber'), "tel"]].map(([k, label, type]) => (
             <div key={k}><label className="text-xs font-medium text-muted-foreground mb-1 block">{label}</label>
               <input type={type} value={(form as any)[k]} onChange={e => setForm({ ...form, [k]: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" /></div>
           ))}
-          <div><label className="text-xs font-medium text-muted-foreground mb-1 block">Жалоба / Проблема</label>
+          <div><label className="text-xs font-medium text-muted-foreground mb-1 block">{t('admin.complaint')}</label>
             <textarea value={form.problem} onChange={e => setForm({ ...form, problem: e.target.value })} rows={4} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none" /></div>
-          <div><label className="text-xs font-medium text-muted-foreground mb-1 block">Медиафайлы (снимки, результаты)</label>
+          <div><label className="text-xs font-medium text-muted-foreground mb-1 block">{t('admin.mediaFilesLabel')}</label>
             <input type="file" multiple accept="image/*,video/*" onChange={e => setFiles(Array.from(e.target.files || []))} className="text-sm text-muted-foreground" /></div>
           <div className="flex gap-3 pt-2">
-            <button onClick={() => setCreateModal(false)} className="flex-1 py-2.5 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors">Отмена</button>
+            <button onClick={() => setCreateModal(false)} className="flex-1 py-2.5 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors">{t('admin.cancel')}</button>
             <button onClick={createPatient} disabled={loading} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white disabled:opacity-60" style={{ background: "hsl(var(--clinic-red))" }}>
-              {loading ? "Сохранение..." : "Зарегистрировать"}
+              {loading ? t('admin.saving') : t('admin.register')}
             </button>
           </div>
         </div>
       </Modal>
 
       {/* Patient detail modal */}
-      <Modal open={!!selected} onClose={() => setSelected(null)} title="Детали пациента">
+      <Modal open={!!selected} onClose={() => setSelected(null)} title=t('admin.patientDetails')>
         {selected && (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-muted/50 rounded-xl p-3"><p className="text-xs text-muted-foreground mb-0.5">Имя</p><p className="font-semibold text-foreground text-sm">{selected.first_name}</p></div>
-              <div className="bg-muted/50 rounded-xl p-3"><p className="text-xs text-muted-foreground mb-0.5">Фамилия</p><p className="font-semibold text-foreground text-sm">{selected.second_name}</p></div>
-              {selected.third_name && <div className="bg-muted/50 rounded-xl p-3 col-span-2"><p className="text-xs text-muted-foreground mb-0.5">Отчество</p><p className="font-semibold text-foreground text-sm">{selected.third_name}</p></div>}
-              <div className="bg-muted/50 rounded-xl p-3 col-span-2"><p className="text-xs text-muted-foreground mb-0.5">Телефон</p><p className="font-semibold text-foreground text-sm">{selected.phone_number}</p></div>
+              <div className="bg-muted/50 rounded-xl p-3"><p className="text-xs text-muted-foreground mb-0.5">{t('admin.firstName')}</p><p className="font-semibold text-foreground text-sm">{selected.first_name}</p></div>
+              <div className="bg-muted/50 rounded-xl p-3"><p className="text-xs text-muted-foreground mb-0.5">{t('admin.lastName')}</p><p className="font-semibold text-foreground text-sm">{selected.second_name}</p></div>
+              {selected.third_name && <div className="bg-muted/50 rounded-xl p-3 col-span-2"><p className="text-xs text-muted-foreground mb-0.5">{t('admin.middleName')}</p><p className="font-semibold text-foreground text-sm">{selected.third_name}</p></div>}
+              <div className="bg-muted/50 rounded-xl p-3 col-span-2"><p className="text-xs text-muted-foreground mb-0.5">{t('admin.phoneNumber')}</p><p className="font-semibold text-foreground text-sm">{selected.phone_number}</p></div>
             </div>
-            <div className="bg-muted/50 rounded-xl p-4"><p className="text-xs text-muted-foreground mb-2">Жалоба</p><p className="text-sm text-foreground leading-relaxed">{selected.problem}</p></div>
+            <div className="bg-muted/50 rounded-xl p-4"><p className="text-xs text-muted-foreground mb-2">{t('admin.complaint')}</p><p className="text-sm text-foreground leading-relaxed">{selected.problem}</p></div>
             {selected.media?.length > 0 && (
               <div>
-                <p className="text-xs text-muted-foreground mb-2">Медиафайлы</p>
+                <p className="text-xs text-muted-foreground mb-2">{t('admin.mediaFiles')}</p>
                 <div className="grid grid-cols-3 gap-2">
                   {selected.media.map((m: any) => (
                     <div key={m.id} className="aspect-square rounded-lg overflow-hidden bg-muted">
@@ -293,7 +293,7 @@ export default function ReceptionDashboard() {
         )}
       </Modal>
 
-      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => deletePatient(confirm)} message={`Удалить пациента "${confirm?.first_name}"?`} />
+      <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => deletePatient(confirm)} message={`${t('admin.deletePatientConfirm')} "${confirm?.first_name}"?`} />
     </div>
   );
 }

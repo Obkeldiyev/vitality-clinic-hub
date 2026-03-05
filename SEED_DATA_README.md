@@ -1,6 +1,6 @@
 # Data Seeding Script
 
-This script helps you upload sample data to your ASL Medline backend.
+This script uploads sample data to your ASL Medline backend at **https://aslmedline.uz**.
 
 ## Prerequisites
 
@@ -9,77 +9,67 @@ This script helps you upload sample data to your ASL Medline backend.
 npm install form-data
 ```
 
-2. Make sure your backend is running on `http://localhost:9007` (or update `API_BASE` in the script)
-
-3. Have admin credentials ready
+2. Have admin credentials ready
 
 ## Usage
 
-### Step 1: Update Configuration
+### Step 1: Update Admin Credentials
 
-Edit `seed-data.js` and update:
+Edit `seed-data.cjs` line 245:
 
 ```javascript
-const API_BASE = 'http://localhost:9007'; // Your backend URL
+const username = 'admin'; // Your admin username
+const password = 'your_admin_password'; // Your admin password
 ```
 
-And in the `main()` function:
-```javascript
-await login('admin', 'your_admin_password'); // Your admin credentials
-```
-
-### Step 2: (Optional) Add Images
-
-Create a folder `seed-images/` and add sample images:
-- `branch1.jpg`, `branch2.jpg` - for branches
-- `news1.jpg`, `news2.jpg` - for news
-- `doctor1.jpg`, `doctor2.jpg` - for doctors
-- `gallery1.jpg`, `gallery2.jpg` - for gallery
-
-Then update the script to include image paths.
-
-### Step 3: Run the Script
+### Step 2: Run the Script
 
 ```bash
-node seed-data.js
+node seed-data.cjs
+```
+
+The script will:
+1. Login to https://aslmedline.uz/api
+2. Upload sample data for:
+   - About Us (2 items)
+   - Statistics (4 items)
+   - Contacts (3 items)
+   - Branches (2 items)
+   - News (2 items)
+   - Doctors (2 items)
+   - Gallery (1 item)
+
+## Adding Images
+
+To upload images with your data:
+
+1. Create folder: `mkdir seed-images`
+2. Add images: `branch1.jpg`, `news1.jpg`, `doctor1.jpg`, etc.
+3. Update the script to include image paths:
+
+```javascript
+const newsItems = [
+  {
+    title_uz: "Yangi uskunalar",
+    // ... other fields
+    image: "./seed-images/news1.jpg" // Add this line
+  },
+];
 ```
 
 ## What Gets Seeded
 
-- ✅ About Us (2 items)
-- ✅ Statistics (4 items)
-- ✅ Contacts (3 items)
-- ✅ Branches (2 items)
-- ✅ News (1 item)
-
-## Customization
-
-You can add more data by editing the arrays in each `seed*()` function:
-
-```javascript
-async function seedBranches() {
-  const branches = [
-    {
-      title: "Your Branch Name",
-      description: "Your description",
-      image: "./seed-images/branch.jpg" // optional
-    },
-    // Add more...
-  ];
-  // ...
-}
-```
+✅ **About Us**: Mission and values  
+✅ **Statistics**: Experience, patients, doctors, departments  
+✅ **Contacts**: Phone, email, address  
+✅ **Branches**: Cardiology, Neurology  
+✅ **News**: Equipment, new doctors  
+✅ **Doctors**: 2 sample doctors  
+✅ **Gallery**: Clinic interior  
 
 ## Troubleshooting
 
-**401 Unauthorized**: Check your admin credentials
-**Connection refused**: Make sure backend is running
-**Image not found**: Check image paths in `seed-images/` folder
-
-## Production Use
-
-For production server (e.g., `http://10.10.2.215:8086`):
-
-```javascript
-const API_BASE = 'http://10.10.2.215:8086/api';
-```
+**401 Unauthorized**: Wrong admin credentials  
+**Connection refused**: Check if https://aslmedline.uz is accessible  
+**ENOTFOUND**: DNS issue, check domain  
+**Image upload failed**: Check image paths and file sizes
