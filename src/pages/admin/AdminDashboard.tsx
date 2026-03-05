@@ -114,7 +114,7 @@ function ConfirmDialog({ open, onClose, onConfirm, message }: any) {
 }
 
 // ── Table ──────────────────────────────────────────────────────────────
-function DataTable({ columns, rows, onEdit, onDelete, onCustom }: any) {
+function DataTable({ columns, rows, onEdit, onDelete, onCustom, onView }: any) {
   const { t } = useTranslation();
   return (
     <div className="overflow-x-auto rounded-xl border border-border">
@@ -129,13 +129,17 @@ function DataTable({ columns, rows, onEdit, onDelete, onCustom }: any) {
         </thead>
         <tbody>
           {rows.map((row: any, i: number) => (
-            <tr key={row.id || i} className="border-b border-border last:border-0 hover:bg-muted/40 transition-colors">
+            <tr 
+              key={row.id || i} 
+              className="border-b border-border last:border-0 hover:bg-muted/40 transition-colors cursor-pointer"
+              onClick={() => onView && onView(row)}
+            >
               {columns.map((c: any) => (
                 <td key={c.key} className="px-4 py-3 text-foreground">
                   {c.render ? c.render(row) : String(row[c.key] ?? "-").slice(0, 60)}
                 </td>
               ))}
-              <td className="px-4 py-3">
+              <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-center justify-end gap-2">
                   {onCustom && onCustom(row)}
                   {onEdit && (
@@ -238,7 +242,7 @@ function OverviewSection() {
 function BranchesSection() {
   const { t } = useTranslation();
   const [items, setItems] = useState<any[]>([]);
-  const [modal, setModal] = useState<{ type: "create" | "edit"; item?: any } | null>(null);
+  const [modal, setModal] = useState<{ type: "create" | "edit" | "view"; item?: any } | null>(null);
   const [confirm, setConfirm] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -417,13 +421,27 @@ function BranchesSection() {
       <SectionHeader title={t('admin.branches')} onAdd={openCreate} />
       <DataTable
         columns={[
-          { key: "id", label: "ID" },
+          { 
+            key: "photo", 
+            label: t('admin.photo'), 
+            render: (r: any) => {
+              const img = r.media?.find((m: any) => m.type?.includes("image") || m.type?.toUpperCase().includes("IMAGE"));
+              return img ? (
+                <img src={getMediaUrl(img.url)} alt={r.title} className="w-10 h-10 rounded-full object-cover" />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                  <Building2 className="w-5 h-5 text-primary/30" />
+                </div>
+              );
+            }
+          },
           { key: "title", label: t('admin.title') },
           { key: "Services", label: t('admin.services'), render: (r: any) => r.Services?.length || 0 },
           { key: "Branch_techs", label: t('admin.equipment'), render: (r: any) => r.Branch_techs?.length || 0 },
           { key: "doctors", label: t('admin.doctors'), render: (r: any) => r.doctors?.length || 0 },
         ]}
         rows={items}
+        onView={(r: any) => setModal({ type: "view", item: r })}
         onEdit={openEdit}
         onDelete={(r: any) => setConfirm(r)}
       />
@@ -441,6 +459,14 @@ function BranchesSection() {
           <div>
             <label className="text-sm font-medium text-foreground mb-1 block">{t('admin.branchMediaLabel')}</label>
             <div className="space-y-2">
+              {/* Show existing photos in edit mode */}
+              {modal?.type === "edit" && modal.item?.media?.length > 0 && (
+                <div className="grid grid-cols-3 gap-2 mb-2">
+                  {modal.item.media.filter((m: any) => m.type?.includes("image")).map((m: any) => (
+                    <img key={m.id} src={getMediaUrl(m.url)} alt="" className="w-full h-20 object-cover rounded-lg" />
+                  ))}
+                </div>
+              )}
               <input 
                 type="file" 
                 accept="image/*,video/*" 
@@ -549,6 +575,42 @@ function BranchesSection() {
         </div>
       </Modal>
 
+      {/* View Modal */}
+      <Modal open={modal?.type === "view"} onClose={() => setModal(null)} title={modal?.item?.title || ""}>
+        {modal?.item && (
+          <div className="space-y-4">
+            {modal.item.media?.length > 0 && (
+              <div className="grid grid-cols-2 gap-2">
+                {modal.item.media.filter((m: any) => m.type?.includes("image")).map((m: any) => (
+                  <img key={m.id} src={getMediaUrl(m.url)} alt="" className="w-full h-32 object-cover rounded-xl" />
+                ))}
+              </div>
+            )}
+            <p className="text-sm text-muted-foreground">{modal.item.description}</p>
+            {modal.item.Services?.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold text-primary mb-2">{t('admin.services')} ({modal.item.Services.length})</p>
+                <div className="space-y-1 max-h-40 overflow-y-auto">
+                  {modal.item.Services.map((s: any) => (
+                    <div key={s.id} className="text-xs p-2 bg-muted/50 rounded">{s.title_uz || s.title_en} - {s.price} {t('services.currency')}</div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {modal.item.Branch_techs?.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold text-primary mb-2">{t('admin.equipment')} ({modal.item.Branch_techs.length})</p>
+                <div className="space-y-1 max-h-40 overflow-y-auto">
+                  {modal.item.Branch_techs.map((t: any) => (
+                    <div key={t.id} className="text-xs p-2 bg-muted/50 rounded">{t.title}</div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </Modal>
+
       <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message={`${t('admin.deleteBranchConfirm')} "${confirm?.title}"?`} />
     </div>
   );
@@ -599,16 +661,30 @@ function DoctorsSection() {
       <SectionHeader title={t('admin.doctors')} onAdd={() => { setForm({ first_name: "", second_name: "", third_name: "", description: "", branch_id: "" }); setDoctorFiles([]); setModal({ type: "create" }); }} />
       <DataTable
         columns={[
-          { key: "id", label: "ID", render: (r: any) => r.id.slice(0, 8) + "..." },
+          { 
+            key: "photo", 
+            label: t('admin.photo'), 
+            render: (r: any) => {
+              const img = r.media?.find((m: any) => m.type?.includes("image") || m.type?.toUpperCase().includes("IMAGE"));
+              return img ? (
+                <img src={getMediaUrl(img.url)} alt={`${r.first_name} ${r.second_name}`} className="w-10 h-10 rounded-full object-cover" />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                  <Stethoscope className="w-5 h-5 text-primary/30" />
+                </div>
+              );
+            }
+          },
           { key: "first_name", label: t('admin.name'), render: (r: any) => `${r.first_name} ${r.second_name}` },
           { key: "description", label: t('admin.description'), render: (r: any) => (r.description || "").slice(0, 40) + "..." },
           { key: "branch", label: t('admin.branch'), render: (r: any) => r.branch?.title || r.branch_id },
         ]}
         rows={items}
+        onView={(r: any) => setModal({ type: "view", item: r })}
         onEdit={(r: any) => { setForm({ first_name: r.first_name, second_name: r.second_name, third_name: r.third_name || "", description: r.description, branch_id: String(r.branch_id) }); setDoctorFiles([]); setModal({ type: "edit", item: r }); }}
         onDelete={(r: any) => setConfirm(r)}
       />
-      <Modal open={!!modal} onClose={() => setModal(null)} title={modal?.type === "create" ? t('admin.createDoctor') : t('admin.editDoctor')}>
+      <Modal open={modal?.type === "create" || modal?.type === "edit"} onClose={() => setModal(null)} title={modal?.type === "create" ? t('admin.createDoctor') : t('admin.editDoctor')}>
         <div className="space-y-3">
           {[["first_name", t('admin.firstName')], ["second_name", t('admin.lastName')], ["third_name", t('admin.middleNameOptional')]].map(([k, label]) => (
             <div key={k}>
@@ -630,6 +706,14 @@ function DoctorsSection() {
           <div>
             <label className="text-xs font-medium text-muted-foreground mb-1 block">{t('admin.doctorPhotoLabel')}</label>
             <div className="space-y-2">
+              {/* Show existing photos in edit mode */}
+              {modal?.type === "edit" && modal.item?.media?.length > 0 && (
+                <div className="grid grid-cols-3 gap-2 mb-2">
+                  {modal.item.media.filter((m: any) => m.type?.includes("image")).map((m: any) => (
+                    <img key={m.id} src={getMediaUrl(m.url)} alt="" className="w-full h-20 object-cover rounded-lg" />
+                  ))}
+                </div>
+              )}
               <input 
                 type="file" 
                 accept="image/*,video/*" 
@@ -666,6 +750,40 @@ function DoctorsSection() {
           </div>
         </div>
       </Modal>
+
+      {/* View Modal */}
+      <Modal open={modal?.type === "view"} onClose={() => setModal(null)} title={modal?.item ? `${modal.item.first_name} ${modal.item.second_name}` : ""}>
+        {modal?.item && (
+          <div className="space-y-4">
+            {modal.item.media?.length > 0 && (
+              <div className="flex justify-center">
+                {modal.item.media.filter((m: any) => m.type?.includes("image")).slice(0, 1).map((m: any) => (
+                  <img key={m.id} src={getMediaUrl(m.url)} alt="" className="w-48 h-48 object-cover rounded-full border-4 border-primary/20" />
+                ))}
+              </div>
+            )}
+            {modal.item.third_name && <p className="text-sm text-muted-foreground text-center">{modal.item.third_name}</p>}
+            <p className="text-sm text-muted-foreground">{modal.item.description}</p>
+            {modal.item.branch && (
+              <div className="p-3 bg-muted/50 rounded-xl">
+                <p className="text-xs text-muted-foreground mb-1">{t('admin.branch')}</p>
+                <p className="text-sm font-semibold text-primary">{modal.item.branch.title}</p>
+              </div>
+            )}
+            {modal.item.awards?.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold text-primary mb-2">{t('admin.awards')} ({modal.item.awards.length})</p>
+                <div className="space-y-1">
+                  {modal.item.awards.map((a: any) => (
+                    <div key={a.id} className="text-xs p-2 bg-muted/50 rounded">{a.name}</div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </Modal>
+
       <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message={`${t('admin.deleteDoctorConfirm')} "${confirm?.first_name} ${confirm?.second_name}"?`} />
     </div>
   );
@@ -836,12 +954,15 @@ function GalleryAdminSection() {
 
   const del = async (item: any) => { try { await api.admin.deleteGallery(item.id); setConfirm(null); load(); } catch (err: any) { alert(err.message); } };
 
+  const openView = (item: any) => { setModal({ type: "view", item }); };
+  const openEdit = (item: any) => { setForm({ title_uz: item.title_uz, title_ru: item.title_ru, title_en: item.title_en }); setFiles([]); setModal({ type: "edit", item }); };
+
   return (
     <div>
       <SectionHeader title={t('admin.galleryTitle')} onAdd={() => { setForm({ title_uz: "", title_ru: "", title_en: "" }); setFiles([]); setModal({ type: "create" }); }} />
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
         {items.map((g: any) => (
-          <div key={g.id} className="group relative bg-card rounded-xl overflow-hidden shadow-card border border-border">
+          <div key={g.id} className="group relative bg-card rounded-xl overflow-hidden shadow-card border border-border cursor-pointer" onClick={() => openView(g)}>
             <div className="h-36 bg-muted flex items-center justify-center overflow-hidden">
               {g.media?.[0] ? (
                 <img src={getMediaUrl(g.media[0].url)} alt="" className="w-full h-full object-cover" />
@@ -852,13 +973,48 @@ function GalleryAdminSection() {
               <p className="text-xs text-muted-foreground">{g.media?.length || 0} {t('admin.mediaCount')}</p>
             </div>
             <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button onClick={() => { setForm({ title_uz: g.title_uz, title_ru: g.title_ru, title_en: g.title_en }); setFiles([]); setModal({ type: "edit", item: g }); }} className="p-1.5 rounded-lg bg-white/90 text-primary shadow"><Pencil className="w-3 h-3" /></button>
-              <button onClick={() => setConfirm(g)} className="p-1.5 rounded-lg bg-white/90 text-destructive shadow"><Trash2 className="w-3 h-3" /></button>
+              <button onClick={(e) => { e.stopPropagation(); openEdit(g); }} className="p-1.5 rounded-lg bg-white/90 text-primary shadow"><Pencil className="w-3 h-3" /></button>
+              <button onClick={(e) => { e.stopPropagation(); setConfirm(g); }} className="p-1.5 rounded-lg bg-white/90 text-destructive shadow"><Trash2 className="w-3 h-3" /></button>
             </div>
           </div>
         ))}
       </div>
-      <Modal open={!!modal} onClose={() => setModal(null)} title={modal?.type === "create" ? t('admin.addGalleryTitle') : t('admin.editGalleryTitle')}>
+
+      {/* View Modal */}
+      {modal?.type === "view" && (
+        <Modal open={true} onClose={() => setModal(null)} title={modal.item.title_uz || modal.item.title_ru || modal.item.title_en}>
+          <div className="space-y-4">
+            {modal.item.media && modal.item.media.length > 0 && (
+              <div className="grid grid-cols-2 gap-2">
+                {modal.item.media.map((m: any) => m && (
+                  <div key={m.id} className="aspect-video rounded-lg overflow-hidden bg-muted">
+                    {m.type?.includes("image") ? (
+                      <img src={getMediaUrl(m.url)} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <video src={getMediaUrl(m.url)} className="w-full h-full object-cover" controls />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+            <div>
+              <p className="text-xs text-muted-foreground mb-1">UZ</p>
+              <p className="text-sm font-semibold text-primary">{modal.item.title_uz}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground mb-1">RU</p>
+              <p className="text-sm font-semibold text-primary">{modal.item.title_ru}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground mb-1">EN</p>
+              <p className="text-sm font-semibold text-primary">{modal.item.title_en}</p>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* Edit/Create Modal */}
+      <Modal open={modal?.type === "create" || modal?.type === "edit"} onClose={() => setModal(null)} title={modal?.type === "create" ? t('admin.addGalleryTitle') : t('admin.editGalleryTitle')}>
         <div className="space-y-3">
           {[["title_ru", t('admin.nameRU')], ["title_en", t('admin.nameEN')], ["title_uz", t('admin.nameUZ')]].map(([k, label]) => (
             <div key={k}><label className="text-xs font-medium text-muted-foreground mb-1 block">{label}</label>
@@ -867,6 +1023,14 @@ function GalleryAdminSection() {
           <div>
             <label className="text-xs font-medium text-muted-foreground mb-1 block">{t('admin.mediaFiles')}</label>
             <div className="space-y-2">
+              {/* Show existing photos in edit mode */}
+              {modal?.type === "edit" && modal.item?.media?.length > 0 && (
+                <div className="grid grid-cols-3 gap-2 mb-2">
+                  {modal.item.media.filter((m: any) => m.type?.includes("image")).map((m: any) => (
+                    <img key={m.id} src={getMediaUrl(m.url)} alt="" className="w-full h-20 object-cover rounded-lg" />
+                  ))}
+                </div>
+              )}
               <input 
                 type="file" 
                 accept="image/*,video/*" 
@@ -968,6 +1132,7 @@ function StatisticsSection() {
 function FeedbackAdminSection() {
   const { t } = useTranslation();
   const [items, setItems] = useState<any[]>([]);
+  const [modal, setModal] = useState<any>(null);
   const [confirm, setConfirm] = useState<any>(null);
 
   const load = useCallback(async () => { const r: any = await api.admin.getAllFeedbacks().catch(() => ({ data: [] })); setItems(r.data || []); }, []);
@@ -987,6 +1152,7 @@ function FeedbackAdminSection() {
           { key: "isApproved", label: t('admin.statusLabel'), render: (r: any) => <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${r.isApproved ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>{r.isApproved ? t('admin.approved') : t('admin.waiting')}</span> },
         ]}
         rows={items}
+        onView={(r: any) => setModal({ type: "view", item: r })}
         onDelete={(r: any) => setConfirm(r)}
         onCustom={(r: any) => !r.isApproved && (
           <button onClick={() => approve(r.id)} className="p-1.5 rounded-lg hover:bg-green-50 text-green-600 transition-colors">
@@ -994,6 +1160,33 @@ function FeedbackAdminSection() {
           </button>
         )}
       />
+
+      {/* View Modal */}
+      <Modal open={modal?.type === "view"} onClose={() => setModal(null)} title={t('admin.feedbackDetails')}>
+        {modal?.item && (
+          <div className="space-y-4">
+            <div className="p-4 bg-muted/50 rounded-xl">
+              <p className="text-xs text-muted-foreground mb-1">{t('admin.name')}</p>
+              <p className="text-sm font-semibold text-primary">{modal.item.full_name}</p>
+            </div>
+            <div className="p-4 bg-muted/50 rounded-xl">
+              <p className="text-xs text-muted-foreground mb-1">{t('admin.phoneNumber')}</p>
+              <p className="text-sm font-semibold text-primary">{modal.item.phone_number}</p>
+            </div>
+            <div className="p-4 bg-muted/50 rounded-xl">
+              <p className="text-xs text-muted-foreground mb-1">{t('admin.review')}</p>
+              <p className="text-sm text-foreground">{modal.item.content}</p>
+            </div>
+            <div className="p-4 bg-muted/50 rounded-xl">
+              <p className="text-xs text-muted-foreground mb-1">{t('admin.statusLabel')}</p>
+              <span className={`inline-block text-xs px-3 py-1 rounded-full font-medium ${modal.item.isApproved ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
+                {modal.item.isApproved ? t('admin.approved') : t('admin.waiting')}
+              </span>
+            </div>
+          </div>
+        )}
+      </Modal>
+
       <ConfirmDialog open={!!confirm} onClose={() => setConfirm(null)} onConfirm={() => del(confirm)} message={t('admin.deleteFeedbackConfirm')} />
     </div>
   );
@@ -1030,13 +1223,57 @@ function ReceptionsSection() {
       <SectionHeader title={t('admin.receptionistsTitle')} onAdd={() => { setForm({ first_name: "", second_name: "", username: "", password: "" }); setFiles([]); setModal({ type: "create" }); }} />
       <DataTable
         columns={[
-          { key: "id", label: "ID", render: (r: any) => r.id.slice(0, 8) + "..." },
+          { 
+            key: "photo", 
+            label: t('admin.photo'), 
+            render: (r: any) => {
+              const img = r.media?.find((m: any) => m.type?.includes("image") || m.type?.toUpperCase().includes("IMAGE"));
+              return img ? (
+                <img src={getMediaUrl(img.url)} alt={`${r.first_name} ${r.second_name}`} className="w-10 h-10 rounded-full object-cover" />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                  <Users className="w-5 h-5 text-primary/30" />
+                </div>
+              );
+            }
+          },
           { key: "first_name", label: t('admin.name'), render: (r: any) => `${r.first_name} ${r.second_name}` },
           { key: "username", label: t('admin.loginLabel') },
         ]}
-        rows={items} onDelete={(r: any) => setConfirm(r)}
+        rows={items}
+        onView={(r: any) => setModal({ type: "view", item: r })}
+        onDelete={(r: any) => setConfirm(r)}
       />
-      <Modal open={!!modal} onClose={() => setModal(null)} title={t('admin.addReceptionistTitle')}>
+
+      {/* View Modal */}
+      <Modal open={modal?.type === "view"} onClose={() => setModal(null)} title={modal?.item ? `${modal.item.first_name} ${modal.item.second_name}` : ""}>
+        {modal?.item && (
+          <div className="space-y-4">
+            {modal.item.media?.length > 0 && (
+              <div className="flex justify-center">
+                {modal.item.media.filter((m: any) => m.type?.includes("image")).slice(0, 1).map((m: any) => (
+                  <img key={m.id} src={getMediaUrl(m.url)} alt="" className="w-32 h-32 object-cover rounded-full border-4 border-primary/20" />
+                ))}
+              </div>
+            )}
+            <div className="p-4 bg-muted/50 rounded-xl">
+              <p className="text-xs text-muted-foreground mb-1">{t('admin.name')}</p>
+              <p className="text-sm font-semibold text-primary">{modal.item.first_name} {modal.item.second_name}</p>
+            </div>
+            <div className="p-4 bg-muted/50 rounded-xl">
+              <p className="text-xs text-muted-foreground mb-1">{t('admin.loginLabel')}</p>
+              <p className="text-sm font-semibold text-primary">{modal.item.username}</p>
+            </div>
+            <div className="p-4 bg-muted/50 rounded-xl">
+              <p className="text-xs text-muted-foreground mb-1">ID</p>
+              <p className="text-sm font-mono text-foreground">{modal.item.id}</p>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      {/* Create Modal */}
+      <Modal open={modal?.type === "create"} onClose={() => setModal(null)} title={t('admin.addReceptionistTitle')}>
         <div className="space-y-3">
           {[["first_name", t('admin.firstName')], ["second_name", t('admin.lastName')], ["username", t('admin.loginLabel')], ["password", t('admin.password')]].map(([k, label]) => (
             <div key={k}><label className="text-xs font-medium text-muted-foreground mb-1 block">{label}</label>
@@ -1112,10 +1349,36 @@ function AboutAdminSection() {
       <DataTable
         columns={[{ key: "id", label: "ID" }, { key: "title_ru", label: t('admin.headerLabel') }, { key: "content_ru", label: t('admin.textLabel'), render: (r: any) => r.content_ru?.slice(0, 60) + "..." }]}
         rows={items}
+        onView={(r: any) => setModal({ type: "view", item: r })}
         onEdit={(r: any) => { setForm({ title_uz: r.title_uz, title_ru: r.title_ru, title_en: r.title_en, content_uz: r.content_uz, content_ru: r.content_ru, content_en: r.content_en }); setModal({ type: "edit", item: r }); }}
         onDelete={(r: any) => setConfirm(r)}
       />
-      <Modal open={!!modal} onClose={() => setModal(null)} title={modal?.type === "create" ? t('admin.addSectionTitle') : t('admin.editTitle')}>
+
+      {/* View Modal */}
+      <Modal open={modal?.type === "view"} onClose={() => setModal(null)} title={modal?.item?.title_uz || modal?.item?.title_ru || modal?.item?.title_en || ""}>
+        {modal?.item && (
+          <div className="space-y-4">
+            <div>
+              <p className="text-xs text-muted-foreground mb-1">UZ</p>
+              <p className="text-sm font-semibold text-primary mb-2">{modal.item.title_uz}</p>
+              <p className="text-sm text-foreground">{modal.item.content_uz}</p>
+            </div>
+            <div className="border-t border-border pt-4">
+              <p className="text-xs text-muted-foreground mb-1">RU</p>
+              <p className="text-sm font-semibold text-primary mb-2">{modal.item.title_ru}</p>
+              <p className="text-sm text-foreground">{modal.item.content_ru}</p>
+            </div>
+            <div className="border-t border-border pt-4">
+              <p className="text-xs text-muted-foreground mb-1">EN</p>
+              <p className="text-sm font-semibold text-primary mb-2">{modal.item.title_en}</p>
+              <p className="text-sm text-foreground">{modal.item.content_en}</p>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      {/* Edit/Create Modal */}
+      <Modal open={modal?.type === "create" || modal?.type === "edit"} onClose={() => setModal(null)} title={modal?.type === "create" ? t('admin.addSectionTitle') : t('admin.editTitle')}>
         <div className="space-y-3">
           {[["title_ru", t('admin.headerRU')], ["title_en", t('admin.headerEN')], ["title_uz", t('admin.headerUZ')]].map(([k, label]) => (
             <div key={k}><label className="text-xs font-medium text-muted-foreground mb-1 block">{label}</label>
@@ -1164,10 +1427,33 @@ function ContactsAdminSection() {
       <DataTable
         columns={[{ key: "id", label: "ID" }, { key: "type", label: t('admin.typeLabel') }, { key: "contact", label: t('admin.valueLabel') }]}
         rows={items}
+        onView={(r: any) => setModal({ type: "view", item: r })}
         onEdit={(r: any) => { setForm({ type: r.type, contact: r.contact }); setModal({ type: "edit", item: r }); }}
         onDelete={(r: any) => setConfirm(r)}
       />
-      <Modal open={!!modal} onClose={() => setModal(null)} title={modal?.type === "create" ? t('admin.addContactTitle') : t('admin.editTitle')}>
+
+      {/* View Modal */}
+      <Modal open={modal?.type === "view"} onClose={() => setModal(null)} title={t('admin.contactDetails')}>
+        {modal?.item && (
+          <div className="space-y-4">
+            <div className="p-4 bg-muted/50 rounded-xl">
+              <p className="text-xs text-muted-foreground mb-1">{t('admin.typeLabel')}</p>
+              <p className="text-sm font-semibold text-primary">{modal.item.type}</p>
+            </div>
+            <div className="p-4 bg-muted/50 rounded-xl">
+              <p className="text-xs text-muted-foreground mb-1">{t('admin.valueLabel')}</p>
+              <p className="text-sm font-semibold text-primary">{modal.item.contact}</p>
+            </div>
+            <div className="p-4 bg-muted/50 rounded-xl">
+              <p className="text-xs text-muted-foreground mb-1">ID</p>
+              <p className="text-sm font-mono text-foreground">{modal.item.id}</p>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      {/* Edit/Create Modal */}
+      <Modal open={modal?.type === "create" || modal?.type === "edit"} onClose={() => setModal(null)} title={modal?.type === "create" ? t('admin.addContactTitle') : t('admin.editTitle')}>
         <div className="space-y-3">
           <div><label className="text-xs font-medium text-muted-foreground mb-1 block">{t('admin.typeLabel')}</label>
             <input value={form.type} onChange={e => setForm({ ...form, type: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" /></div>

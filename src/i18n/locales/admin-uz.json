@@ -208,6 +208,8 @@
     "mediaFilesLabel": "Media fayllar (rasmlar, natijalar)",
     "register": "Ro'yxatdan o'tkazish",
     "patientDetails": "Bemor tafsilotlari",
-    "deletePatientConfirm": "Bemorni o'chirish"
+    "deletePatientConfirm": "Bemorni o'chirish",
+    "feedbackDetails": "Fikr tafsilotlari",
+    "contactDetails": "Kontakt tafsilotlari"
   }
 }
