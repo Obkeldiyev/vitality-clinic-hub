@@ -757,7 +757,7 @@ function DoctorsSection() {
           <div className="space-y-4">
             {modal.item.media?.length > 0 && (
               <div className="flex justify-center">
-                {modal.item.media.filter((m: any) => m.type?.includes("image")).slice(0, 1).map((m: any) => (
+                {modal.item.media.filter((m: any) => m.type?.includes("image") || m.type?.toUpperCase().includes("IMAGE")).slice(0, 1).map((m: any) => (
                   <img key={m.id} src={getMediaUrl(m.url)} alt="" className="w-48 h-48 object-cover rounded-full border-4 border-primary/20" />
                 ))}
               </div>

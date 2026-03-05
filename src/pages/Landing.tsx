@@ -178,8 +178,8 @@ function NewsModal({ newsItem, onClose }: { newsItem: any; onClose: () => void }
       {newsItem && (
         <div>
           {images.length > 0 && (
-            <div className="relative overflow-hidden bg-muted">
-              <img src={getMediaUrl(images[0].url)} alt={getTitle(newsItem)} className="w-full h-auto object-contain" />
+            <div className="relative overflow-hidden bg-muted max-h-[500px] flex items-center justify-center">
+              <img src={getMediaUrl(images[0].url)} alt={getTitle(newsItem)} className="w-full h-auto object-contain max-h-[500px]" />
             </div>
           )}
           <div className="p-6">
