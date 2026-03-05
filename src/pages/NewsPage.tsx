@@ -75,12 +75,12 @@ export default function NewsPage() {
                   onClick={() => { setSelectedNews(item); setCurrentMediaIndex(0); }}
                   className="group bg-card rounded-2xl overflow-hidden shadow-card hover:shadow-hover transition-all duration-300 border border-border hover:-translate-y-1 cursor-pointer"
                 >
-                  <div className="h-48 overflow-hidden bg-muted">
+                  <div className="h-80 overflow-hidden bg-muted">
                     {img ? (
                       <img
                         src={getMediaUrl(img.url)}
                         alt={getTitle(item)}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                         onError={(e) => console.error("NewsPage - Image failed to load:", img.url, e)}
                         onLoad={() => console.log("NewsPage - Image loaded successfully:", img.url)}
                       />

@@ -56,12 +56,12 @@ export default function DoctorsPage() {
                     onClick={() => setSelectedDoctor(doc)}
                     className="group bg-card rounded-2xl overflow-hidden shadow-card hover:shadow-hover transition-all duration-300 border border-border text-center hover:-translate-y-1 cursor-pointer"
                   >
-                    <div className="h-56 overflow-hidden bg-muted">
+                    <div className="h-80 overflow-hidden bg-muted">
                       {img ? (
                         <img
                           src={getMediaUrl(img.url)}
                           alt={`${doc.first_name} ${doc.second_name}`}
-                          className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center" style={{ background: "hsl(var(--primary)/0.06)" }}>
