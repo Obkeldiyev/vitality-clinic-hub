@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import CursorBackground from "@/components/CursorBackground";
 import Navbar from "@/components/Navbar";
@@ -12,16 +12,12 @@ import {
   MapPin,
   Star,
   Activity,
-  Users,
   Award,
-  Clock,
   Send,
   Stethoscope,
   Building2,
   Newspaper,
   Image as ImageIcon,
-  ShieldCheck,
-  Sparkles,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import logo from "@/assets/logo.png";
@@ -184,7 +180,7 @@ function HeroSection({ aboutUs }: { aboutUs: any[] }) {
                       </div>
                       <div>
                         <p className="text-white font-bold text-sm">ASL MEDLINE</p>
-                        <p className="text-white/70 text-xs">Reception & Appointments</p>
+                        <p className="text-white/70 text-xs">{t('common.receptionAppointments')}</p>
                       </div>
                     </div>
                     <div className="text-white/80 text-xs flex items-center gap-1">
@@ -198,12 +194,12 @@ function HeroSection({ aboutUs }: { aboutUs: any[] }) {
                 <div className="p-6">
                   <div className="grid gap-3">
                     <div className="rounded-2xl bg-white/10 border border-white/10 p-4">
-                      <p className="text-white/70 text-xs mb-1">Working hours</p>
-                      <p className="text-white font-semibold text-sm">Mon–Sun • 08:00 – 22:00</p>
+                      <p className="text-white/70 text-xs mb-1">{t('common.workingHours')}</p>
+                      <p className="text-white font-semibold text-sm">{t('common.schedule')}</p>
                     </div>
 
                     <div className="rounded-2xl bg-white/10 border border-white/10 p-4">
-                      <p className="text-white/70 text-xs mb-1">Phone</p>
+                      <p className="text-white/70 text-xs mb-1">{t('common.phone')}</p>
                       <p className="text-white font-semibold text-sm flex items-center gap-2">
                         <Phone className="w-4 h-4 text-red-300" />
                         +998 (99) 999-99-99
@@ -211,10 +207,10 @@ function HeroSection({ aboutUs }: { aboutUs: any[] }) {
                     </div>
 
                     <div className="rounded-2xl bg-white/10 border border-white/10 p-4">
-                      <p className="text-white/70 text-xs mb-1">Location</p>
+                      <p className="text-white/70 text-xs mb-1">{t('common.location')}</p>
                       <p className="text-white font-semibold text-sm flex items-center gap-2">
                         <MapPin className="w-4 h-4 text-red-300" />
-                        Tashkent, Uzbekistan
+                        {t('common.locationAddress')}
                       </p>
                     </div>
 
@@ -224,11 +220,11 @@ function HeroSection({ aboutUs }: { aboutUs: any[] }) {
                       }
                       className="mt-2 w-full py-3 rounded-2xl bg-white text-black font-bold text-sm hover:opacity-90 transition"
                     >
-                      Book a consultation
+                      {t('common.bookConsultation')}
                     </button>
 
                     <p className="text-white/60 text-xs text-center">
-                      Fast response • Modern diagnostics • Trusted doctors
+                      {t('common.fastResponse')} • {t('common.modernDiagnostics')} • {t('common.trustedDoctors')}
                     </p>
                   </div>
                 </div>

@@ -116,6 +116,16 @@
     "reception": "Qabulxona"
   },
   "common": {
-    "seeMore": "Ko'proq ko'rish"
+    "seeMore": "Ko'proq ko'rish",
+    "workingHours": "Ish vaqti",
+    "schedule": "Dush-Yak • 08:00 – 22:00",
+    "phone": "Telefon",
+    "location": "Manzil",
+    "locationAddress": "Toshkent, O'zbekiston",
+    "bookConsultation": "Konsultatsiyaga yozilish",
+    "fastResponse": "Tez javob",
+    "modernDiagnostics": "Zamonaviy diagnostika",
+    "trustedDoctors": "Ishonchli shifokorlar",
+    "receptionAppointments": "Qabul va konsultatsiya"
   }
 }
