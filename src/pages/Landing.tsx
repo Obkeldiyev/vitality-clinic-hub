@@ -18,6 +18,7 @@ import {
   Building2,
   Newspaper,
   Image as ImageIcon,
+  X,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import logo from "@/assets/logo.png";
@@ -28,6 +29,167 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return <h2 className="section-title mb-4">{children}</h2>;
+}
+
+// ── Modal Component ────────────────────────────────────────────────────
+function DetailModal({ open, onClose, children }: { open: boolean; onClose: () => void; children: React.ReactNode }) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4" onClick={onClose}>
+      <div
+        className="bg-card rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-colors"
+        >
+          <X className="w-5 h-5" />
+        </button>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// ── Branch Modal ───────────────────────────────────────────────────────
+function BranchModal({ branch, onClose }: { branch: any; onClose: () => void }) {
+  const { t } = useTranslation();
+  const img = branch?.media?.find((m: any) => m.type?.includes("image"));
+  
+  return (
+    <DetailModal open={!!branch} onClose={onClose}>
+      {branch && (
+        <div>
+          {img && (
+            <div className="h-80 overflow-hidden">
+              <img src={getMediaUrl(img.url)} alt={branch.title} className="w-full h-full object-cover" />
+            </div>
+          )}
+          <div className="p-8">
+            <h2 className="font-display font-bold text-3xl text-primary mb-4">{branch.title}</h2>
+            <p className="text-muted-foreground leading-relaxed mb-6">{branch.description}</p>
+            
+            {branch.Services?.length > 0 && (
+              <div className="mb-6">
+                <h3 className="font-semibold text-lg text-primary mb-3">{t("services.label")}</h3>
+                <div className="grid gap-3">
+                  {branch.Services.map((svc: any) => (
+                    <div key={svc.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/50 border border-border">
+                      <span className="text-sm font-medium">{getTitle(svc)}</span>
+                      <span className="text-sm font-bold text-primary">{svc.price} {t("services.currency")}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {branch.Branch_techs?.length > 0 && (
+              <div>
+                <h3 className="font-semibold text-lg text-primary mb-3">{t("branches.equipment")}</h3>
+                <div className="grid gap-3">
+                  {branch.Branch_techs.map((tech: any) => (
+                    <div key={tech.id} className="p-3 rounded-xl bg-muted/50 border border-border">
+                      <p className="text-sm font-medium mb-1">{tech.title}</p>
+                      <p className="text-xs text-muted-foreground">{tech.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </DetailModal>
+  );
+}
+
+// ── Doctor Modal ───────────────────────────────────────────────────────
+function DoctorModal({ doctor, onClose }: { doctor: any; onClose: () => void }) {
+  const { t } = useTranslation();
+  const img = doctor?.media?.find((m: any) => m.type?.includes("image"));
+  
+  return (
+    <DetailModal open={!!doctor} onClose={onClose}>
+      {doctor && (
+        <div>
+          <div className="grid md:grid-cols-2 gap-8 p-8">
+            <div>
+              {img ? (
+                <img src={getMediaUrl(img.url)} alt={`${doctor.first_name} ${doctor.second_name}`} className="w-full rounded-2xl object-cover" />
+              ) : (
+                <div className="w-full aspect-square rounded-2xl bg-muted flex items-center justify-center">
+                  <Stethoscope className="w-20 h-20 text-primary/30" />
+                </div>
+              )}
+            </div>
+            <div>
+              <h2 className="font-display font-bold text-3xl text-primary mb-2">
+                {doctor.first_name} {doctor.second_name}
+              </h2>
+              {doctor.third_name && <p className="text-muted-foreground mb-4">{doctor.third_name}</p>}
+              <p className="text-muted-foreground leading-relaxed mb-6">{doctor.description}</p>
+              
+              {doctor.branch && (
+                <div className="mb-4 p-3 rounded-xl bg-muted/50 border border-border">
+                  <p className="text-xs text-muted-foreground mb-1">{t("branches.label")}</p>
+                  <p className="text-sm font-semibold text-primary">{doctor.branch.title}</p>
+                </div>
+              )}
+              
+              {doctor.awards?.length > 0 && (
+                <div>
+                  <h3 className="font-semibold text-lg text-primary mb-3 flex items-center gap-2">
+                    <Award className="w-5 h-5" />
+                    {t("doctors.awards")}
+                  </h3>
+                  <div className="space-y-2">
+                    {doctor.awards.map((award: any) => (
+                      <div key={award.id} className="p-3 rounded-xl bg-muted/50 border border-border">
+                        <p className="text-sm font-medium">{award.name}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </DetailModal>
+  );
+}
+
+// ── News Modal ─────────────────────────────────────────────────────────
+function NewsModal({ newsItem, onClose }: { newsItem: any; onClose: () => void }) {
+  const allMedia = newsItem?.media || [];
+  
+  return (
+    <DetailModal open={!!newsItem} onClose={onClose}>
+      {newsItem && (
+        <div>
+          {allMedia.length > 0 && (
+            <div className="grid grid-cols-2 gap-2 p-4">
+              {allMedia.map((m: any) => (
+                <div key={m.id} className="rounded-xl overflow-hidden">
+                  {m.type?.includes("image") ? (
+                    <img src={getMediaUrl(m.url)} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <video src={getMediaUrl(m.url)} controls className="w-full h-full" />
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="p-8">
+            <h2 className="font-display font-bold text-3xl text-primary mb-4">{getTitle(newsItem)}</h2>
+            <p className="text-muted-foreground text-sm mb-4">{getDescription(newsItem)}</p>
+            <p className="text-foreground leading-relaxed">{getContent(newsItem)}</p>
+          </div>
+        </div>
+      )}
+    </DetailModal>
+  );
 }
 
 /**
@@ -300,14 +462,11 @@ function AboutSection({ aboutUs }: { aboutUs: any[] }) {
 }
 
 // ── Branches ───────────────────────────────────────────────────────────
-function BranchesSection({ branches }: { branches: any[] }) {
+function BranchesSection({ branches, onBranchClick }: { branches: any[]; onBranchClick: (branch: any) => void }) {
   const { t } = useTranslation();
-  const [isPaused, setIsPaused] = useState(false);
-
-  const displayBranches = branches.length > 0 ? [...branches, ...branches, ...branches] : [];
 
   return (
-    <section id="branches" className="py-24 bg-background relative z-10 overflow-hidden">
+    <section id="branches" className="py-24 bg-background relative z-10">
       <div className="container mx-auto px-4">
         <div className="text-center mb-14">
           <SectionLabel>{t("branches.label")}</SectionLabel>
@@ -315,72 +474,66 @@ function BranchesSection({ branches }: { branches: any[] }) {
         </div>
 
         {branches.length > 0 ? (
-          <div className="relative -mx-4 px-4 overflow-hidden">
-            <div
-              className="flex gap-6 animate-scroll-branches"
-              style={{ animationPlayState: isPaused ? "paused" : "running", width: "fit-content" }}
-              onMouseEnter={() => setIsPaused(true)}
-              onMouseLeave={() => setIsPaused(false)}
-            >
-              {displayBranches.map((branch: any, idx: number) => {
-                const img = branch.media?.find(
-                  (m: any) => m.type?.includes("image") || m.type?.toUpperCase().includes("IMAGE")
-                );
-                return (
-                  <div
-                    key={`${branch.id}-${idx}`}
-                    className="group bg-card rounded-2xl overflow-hidden shadow-card hover:shadow-hover transition-all duration-300 border border-border hover:-translate-y-1 flex-shrink-0 w-80"
-                  >
-                    <div className="h-48 overflow-hidden bg-muted">
-                      {img ? (
-                        <img
-                          src={getMediaUrl(img.url)}
-                          alt={branch.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      ) : (
-                        <div
-                          className="w-full h-full flex items-center justify-center"
-                          style={{ background: "hsl(var(--primary) / 0.08)" }}
-                        >
-                          <Building2 className="w-14 h-14 text-primary/30" />
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-6">
-                      <h3 className="font-display font-bold text-primary text-lg mb-2 group-hover:text-clinic-red transition-colors">
-                        {branch.title}
-                      </h3>
-                      <p className="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-3">
-                        {branch.description}
-                      </p>
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {branch.Services?.slice(0, 3).map((svc: any) => (
-                          <span
-                            key={svc.id}
-                            className="text-xs px-2.5 py-1 rounded-full font-medium"
-                            style={{ background: "hsl(var(--primary)/0.08)", color: "hsl(var(--primary))" }}
-                          >
-                            {getTitle(svc)}
-                          </span>
-                        ))}
-                        {(branch.Services?.length || 0) > 3 && (
-                          <span className="text-xs px-2.5 py-1 rounded-full font-medium bg-muted text-muted-foreground">
-                            +{branch.Services.length - 3}
-                          </span>
-                        )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {branches.map((branch: any) => {
+              const img = branch.media?.find(
+                (m: any) => m.type?.includes("image") || m.type?.toUpperCase().includes("IMAGE")
+              );
+              return (
+                <div
+                  key={branch.id}
+                  onClick={() => onBranchClick(branch)}
+                  className="group bg-card rounded-2xl overflow-hidden shadow-card hover:shadow-hover transition-all duration-300 border border-border hover:-translate-y-1 cursor-pointer"
+                >
+                  <div className="h-48 overflow-hidden bg-muted">
+                    {img ? (
+                      <img
+                        src={getMediaUrl(img.url)}
+                        alt={branch.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div
+                        className="w-full h-full flex items-center justify-center"
+                        style={{ background: "hsl(var(--primary) / 0.08)" }}
+                      >
+                        <Building2 className="w-14 h-14 text-primary/30" />
                       </div>
-                      {branch.Branch_techs?.length > 0 && (
-                        <div className="text-xs text-muted-foreground">
-                          <span className="font-medium text-primary">{branch.Branch_techs.length}</span>{" "}
-                          {t("branches.equipment")}
-                        </div>
+                    )}
+                  </div>
+                  <div className="p-6">
+                    <h3 className="font-display font-bold text-primary text-lg mb-2 group-hover:text-clinic-red transition-colors">
+                      {branch.title}
+                    </h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-3">
+                      {branch.description}
+                    </p>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {branch.Services?.slice(0, 3).map((svc: any) => (
+                        <span
+                          key={svc.id}
+                          className="text-xs px-2.5 py-1 rounded-full font-medium"
+                          style={{ background: "hsl(var(--primary)/0.08)", color: "hsl(var(--primary))" }}
+                        >
+                          {getTitle(svc)}
+                        </span>
+                      ))}
+                      {(branch.Services?.length || 0) > 3 && (
+                        <span className="text-xs px-2.5 py-1 rounded-full font-medium bg-muted text-muted-foreground">
+                          +{branch.Services.length - 3}
+                        </span>
                       )}
                     </div>
+                    {branch.Branch_techs?.length > 0 && (
+                      <div className="text-xs text-muted-foreground">
+                        <span className="font-medium text-primary">{branch.Branch_techs.length}</span>{" "}
+                        {t("branches.equipment")}
+                      </div>
+                    )}
                   </div>
-                );
-              })}
-            </div>
+                </div>
+              );
+            })}
           </div>
         ) : (
           <div className="text-center py-20 text-muted-foreground">
@@ -388,34 +541,13 @@ function BranchesSection({ branches }: { branches: any[] }) {
             <p>{t("branches.loading")}</p>
           </div>
         )}
-
-        {branches.length > 0 && (
-          <div className="text-center mt-10">
-            <Link
-              to="/branches"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-white transition-all hover:opacity-90 hover:scale-105 shadow-lg"
-              style={{ background: "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--clinic-red)) 100%)" }}
-            >
-              <Building2 className="w-5 h-5" />
-              {t("common.seeMore")}
-            </Link>
-          </div>
-        )}
       </div>
-
-      <style>{`
-        @keyframes scroll-branches {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(calc(-100% / 3)); }
-        }
-        .animate-scroll-branches { animation: scroll-branches 35s linear infinite; }
-      `}</style>
     </section>
   );
 }
 
 // ── Doctors ────────────────────────────────────────────────────────────
-function DoctorsSection({ doctors }: { doctors: any[] }) {
+function DoctorsSection({ doctors, onDoctorClick }: { doctors: any[]; onDoctorClick: (doctor: any) => void }) {
   const { t } = useTranslation();
   const [isPaused, setIsPaused] = useState(false);
 
@@ -444,7 +576,8 @@ function DoctorsSection({ doctors }: { doctors: any[] }) {
                 return (
                   <div
                     key={`${doc.id}-${idx}`}
-                    className="group bg-card rounded-2xl overflow-hidden shadow-card hover:shadow-hover transition-all duration-300 border border-border text-center hover:-translate-y-1 flex-shrink-0 w-64"
+                    onClick={() => onDoctorClick(doc)}
+                    className="group bg-card rounded-2xl overflow-hidden shadow-card hover:shadow-hover transition-all duration-300 border border-border text-center hover:-translate-y-1 flex-shrink-0 w-64 cursor-pointer"
                   >
                     <div className="h-80 overflow-hidden bg-muted">
                       {img ? (
@@ -485,19 +618,6 @@ function DoctorsSection({ doctors }: { doctors: any[] }) {
             <p>{t("doctors.loading")}</p>
           </div>
         )}
-
-        {doctors.length > 0 && (
-          <div className="text-center mt-10">
-            <Link
-              to="/doctors"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-white transition-all hover:opacity-90 hover:scale-105 shadow-lg"
-              style={{ background: "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--clinic-red)) 100%)" }}
-            >
-              <Stethoscope className="w-5 h-5" />
-              {t("common.seeMore")}
-            </Link>
-          </div>
-        )}
       </div>
 
       <style>{`
@@ -512,7 +632,7 @@ function DoctorsSection({ doctors }: { doctors: any[] }) {
 }
 
 // ── News ───────────────────────────────────────────────────────────────
-function NewsSection({ news }: { news: any[] }) {
+function NewsSection({ news, onNewsClick }: { news: any[]; onNewsClick: (newsItem: any) => void }) {
   const { t } = useTranslation();
   const [isPaused, setIsPaused] = useState(false);
 
@@ -541,7 +661,8 @@ function NewsSection({ news }: { news: any[] }) {
                 return (
                   <div
                     key={`${item.id}-${idx}`}
-                    className="group bg-card rounded-2xl overflow-hidden shadow-card hover:shadow-hover transition-all duration-300 border border-border hover:-translate-y-1 flex-shrink-0 w-72"
+                    onClick={() => onNewsClick(item)}
+                    className="group bg-card rounded-2xl overflow-hidden shadow-card hover:shadow-hover transition-all duration-300 border border-border hover:-translate-y-1 flex-shrink-0 w-72 cursor-pointer"
                   >
                     <div className="relative overflow-hidden bg-muted" style={{ aspectRatio: "4/5" }}>
                       {img ? (
@@ -573,19 +694,6 @@ function NewsSection({ news }: { news: any[] }) {
           <div className="text-center py-20 text-muted-foreground">
             <Newspaper className="w-12 h-12 mx-auto mb-3 opacity-30" />
             <p>{t("news.loading")}</p>
-          </div>
-        )}
-
-        {news.length > 0 && (
-          <div className="text-center mt-10">
-            <Link
-              to="/news"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-white transition-all hover:opacity-90 hover:scale-105 shadow-lg"
-              style={{ background: "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--clinic-red)) 100%)" }}
-            >
-              <Newspaper className="w-5 h-5" />
-              {t("common.seeMore")}
-            </Link>
           </div>
         )}
       </div>
@@ -907,6 +1015,10 @@ export default function Landing() {
     contacts: [] as any[],
   });
 
+  const [selectedBranch, setSelectedBranch] = useState<any>(null);
+  const [selectedDoctor, setSelectedDoctor] = useState<any>(null);
+  const [selectedNews, setSelectedNews] = useState<any>(null);
+
   useEffect(() => {
     Promise.allSettled([
       api.getAboutUs(),
@@ -945,17 +1057,22 @@ export default function Landing() {
 
       {/* White content below hero */}
       <div className="relative z-10">
-        <NewsSection news={data.news} />
+        <NewsSection news={data.news} onNewsClick={setSelectedNews} />
         <StatsSection stats={data.stats} />
         <AboutSection aboutUs={data.aboutUs} />
-        <BranchesSection branches={data.branches} />
-        <DoctorsSection doctors={data.doctors} />
+        <BranchesSection branches={data.branches} onBranchClick={setSelectedBranch} />
+        <DoctorsSection doctors={data.doctors} onDoctorClick={setSelectedDoctor} />
         <GallerySection gallery={data.gallery} />
         <ConsultationSection />
         <FeedbackSection feedbacks={data.feedbacks} />
         <ContactsSection contacts={data.contacts} />
         <Footer />
       </div>
+
+      {/* Modals */}
+      <BranchModal branch={selectedBranch} onClose={() => setSelectedBranch(null)} />
+      <DoctorModal doctor={selectedDoctor} onClose={() => setSelectedDoctor(null)} />
+      <NewsModal newsItem={selectedNews} onClose={() => setSelectedNews(null)} />
     </div>
   );
 }
