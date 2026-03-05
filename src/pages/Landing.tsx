@@ -19,6 +19,7 @@ import {
   Newspaper,
   Image as ImageIcon,
   X,
+  ArrowRight,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import logo from "@/assets/logo.png";
@@ -629,6 +630,18 @@ function DoctorsSection({ doctors, onDoctorClick }: { doctors: any[]; onDoctorCl
             <p>{t("doctors.loading")}</p>
           </div>
         )}
+
+        {doctors.length > 0 && (
+          <div className="text-center mt-10">
+            <a
+              href="/doctors"
+              className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
+            >
+              {t("common.seeMore")}
+              <ArrowRight className="w-4 h-4" />
+            </a>
+          </div>
+        )}
       </div>
 
       <style>{`
@@ -705,6 +718,18 @@ function NewsSection({ news, onNewsClick }: { news: any[]; onNewsClick: (newsIte
           <div className="text-center py-20 text-muted-foreground">
             <Newspaper className="w-12 h-12 mx-auto mb-3 opacity-30" />
             <p>{t("news.loading")}</p>
+          </div>
+        )}
+
+        {news.length > 0 && (
+          <div className="text-center mt-10">
+            <a
+              href="/news"
+              className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
+            >
+              {t("common.seeMore")}
+              <ArrowRight className="w-4 h-4" />
+            </a>
           </div>
         )}
       </div>
