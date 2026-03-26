@@ -3,7 +3,6 @@ import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, setToken, setRefreshToken, setRole, setUser } from "@/lib/api";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
-import logo from "@/assets/logo.png";
 import { Lock, User, Eye, EyeOff } from "lucide-react";
 
 export default function ReceptionLogin() {
@@ -57,7 +56,7 @@ export default function ReceptionLogin() {
       <div className="relative w-full max-w-md mx-4">
         <div className="bg-card rounded-3xl shadow-2xl p-8">
           <div className="flex flex-col items-center mb-8">
-            <img src={logo} alt="ASL Medline" className="h-14 w-auto mb-4" />
+            <img src="/aslmedline.png" alt="ASL Medline" className="h-20 w-auto mb-4 object-contain" />
             <h1 className="font-display font-bold text-2xl text-primary">{t('admin.receptions')}</h1>
             <p className="text-muted-foreground text-sm mt-1">{t('admin.loginPrompt')}</p>
           </div>

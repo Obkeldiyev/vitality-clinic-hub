@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { api, getRole, MEDIA_BASE, getMediaUrl } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
-import logo from "@/assets/logo.png";
 import { Users, Clock, LogOut, Plus, Trash2, X, Menu, ChevronRight } from "lucide-react";
 
 function Modal({ open, onClose, title, children }: any) {
@@ -96,7 +95,7 @@ export default function ReceptionDashboard() {
       {sidebarOpen && <div className="fixed inset-0 bg-black/50 z-30 lg:hidden" onClick={() => setSidebarOpen(false)} />}
       <aside className={`fixed left-0 top-0 h-full w-64 z-40 transition-transform duration-300 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 flex flex-col`} style={{ background: "hsl(var(--clinic-red))" }}>
         <div className="p-5 border-b border-white/20">
-          <img src={logo} alt="ASL Medline" className="h-10 w-auto" />
+          <img src="/aslmedline.png" alt="ASL Medline" className="h-16 w-auto object-contain" />
           <p className="text-white/60 text-xs mt-2 font-medium uppercase tracking-widest">{t('admin.receptions')}</p>
         </div>
         <nav className="flex-1 overflow-y-auto py-4 px-3">

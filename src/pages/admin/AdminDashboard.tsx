@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { api, MEDIA_BASE, getMediaUrl, getRole, setUser } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
-import logo from "@/assets/logo.png";
 import {
   LayoutDashboard, Building2, Stethoscope, Newspaper, Image as ImageIcon,
   BarChart3, MessageSquare, Users, Info, Phone, LogOut, Plus, Pencil,
@@ -36,7 +35,7 @@ function Sidebar({ active, setActive, onLogout, sidebarOpen, setSidebarOpen }: a
       )}
       <aside className={`fixed left-0 top-0 h-full w-64 z-40 transition-transform duration-300 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 flex flex-col`} style={{ background: "hsl(var(--sidebar-background))" }}>
         <div className="p-5 border-b border-sidebar-border">
-          <img src={logo} alt="ASL Medline" className="h-16 w-auto object-contain" />
+          <img src="/aslmedline.png" alt="ASL Medline" className="h-16 w-auto object-contain" />
           <p className="text-sidebar-foreground/60 text-xs mt-2 font-medium uppercase tracking-widest">{t('admin.dashboard')}</p>
         </div>
 
