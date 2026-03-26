@@ -1,14 +1,14 @@
 ﻿import { useState, useEffect, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { api, MEDIA_BASE, getMediaUrl, getRole } from "@/lib/api";
+import { api, MEDIA_BASE, getMediaUrl, getRole, setUser } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import logo from "@/assets/logo.png";
 import {
   LayoutDashboard, Building2, Stethoscope, Newspaper, Image as ImageIcon,
   BarChart3, MessageSquare, Users, Info, Phone, LogOut, Plus, Pencil,
-  Trash2, CheckCircle, X, ChevronDown, ChevronRight, Menu, Check
+  Trash2, CheckCircle, X, ChevronDown, ChevronRight, Menu, Check, UserCog
 } from "lucide-react";
 
 // ── Sidebar ────────────────────────────────────────────────────────────
@@ -36,7 +36,7 @@ function Sidebar({ active, setActive, onLogout, sidebarOpen, setSidebarOpen }: a
       )}
       <aside className={`fixed left-0 top-0 h-full w-64 z-40 transition-transform duration-300 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 flex flex-col`} style={{ background: "hsl(var(--sidebar-background))" }}>
         <div className="p-5 border-b border-sidebar-border">
-          <img src={logo} alt="ASL Medline" className="h-10 w-auto" />
+          <img src={logo} alt="ASL Medline" className="h-16 w-auto object-contain" />
           <p className="text-sidebar-foreground/60 text-xs mt-2 font-medium uppercase tracking-widest">{t('admin.dashboard')}</p>
         </div>
 
@@ -1477,13 +1477,117 @@ export default function AdminDashboard() {
   const { logout } = useAuth();
   const [active, setActive] = useState("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [adminProfile, setAdminProfile] = useState<any>(null);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [profileError, setProfileError] = useState("");
+  const [profileSuccess, setProfileSuccess] = useState("");
+  const [profileForm, setProfileForm] = useState({
+    username: "",
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
 
   useEffect(() => {
     const role = getRole();
     if (role !== "ADMIN") navigate("/admin/login");
   }, [navigate]);
 
+  const loadProfile = useCallback(async () => {
+    try {
+      const response: any = await api.admin.getProfile();
+      const profile = response?.data;
+
+      if (profile) {
+        setAdminProfile(profile);
+        setUser(profile);
+        setProfileForm((prev) => ({
+          ...prev,
+          username: profile.username || "",
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        }));
+      }
+    } catch (error) {
+      console.error("Failed to load admin profile", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadProfile();
+  }, [loadProfile]);
+
   const handleLogout = () => { logout(); navigate("/admin/login"); };
+
+  const openProfileEditor = () => {
+    setProfileError("");
+    setProfileSuccess("");
+    setProfileForm((prev) => ({
+      ...prev,
+      username: adminProfile?.username || prev.username || "",
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    }));
+    setProfileOpen(true);
+  };
+
+  const saveProfile = async () => {
+    const currentUsername = adminProfile?.username || profileForm.username;
+    const nextUsername = profileForm.username.trim();
+    const wantsUsernameChange = !!nextUsername && nextUsername !== currentUsername;
+    const wantsPasswordChange = !!profileForm.newPassword;
+
+    if (!wantsUsernameChange && !wantsPasswordChange) {
+      setProfileError("No profile changes to save.");
+      return;
+    }
+
+    if (wantsPasswordChange && !profileForm.currentPassword) {
+      setProfileError("Enter your current password to set a new one.");
+      return;
+    }
+
+    if (wantsPasswordChange && profileForm.newPassword !== profileForm.confirmPassword) {
+      setProfileError("New password and confirm password do not match.");
+      return;
+    }
+
+    setProfileLoading(true);
+    setProfileError("");
+    setProfileSuccess("");
+
+    try {
+      if (wantsUsernameChange) {
+        await api.admin.editUsername({
+          oldusername: currentUsername,
+          newUsername: nextUsername,
+        });
+      }
+
+      if (wantsPasswordChange) {
+        await api.admin.editPassword({
+          oldPassword: profileForm.currentPassword,
+          newPassword: profileForm.newPassword,
+        });
+      }
+
+      await loadProfile();
+      setProfileSuccess("Profile updated successfully.");
+      setProfileForm((prev) => ({
+        ...prev,
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      }));
+    } catch (err: any) {
+      setProfileError(err.message || "Failed to update profile.");
+    } finally {
+      setProfileLoading(false);
+    }
+  };
 
   const SECTIONS = [
     { key: "overview", label: t('admin.overview'), icon: LayoutDashboard },
@@ -1535,6 +1639,14 @@ export default function AdminDashboard() {
             {SECTIONS.find(s => s.key === active)?.label || t('admin.panelTitle')}
           </h1>
           <div className="ml-auto flex items-center gap-2">
+            <button
+              type="button"
+              onClick={openProfileEditor}
+              className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+            >
+              <UserCog className="h-4 w-4 text-primary" />
+              {adminProfile?.username || t('admin.administrator')}
+            </button>
             <span className="text-xs text-muted-foreground bg-muted px-3 py-1.5 rounded-full font-medium">{t('admin.administrator')}</span>
           </div>
         </header>
@@ -1543,6 +1655,78 @@ export default function AdminDashboard() {
           {sections[active]}
         </main>
       </div>
+
+      <Modal open={profileOpen} onClose={() => setProfileOpen(false)} title="Edit admin profile">
+        <div className="space-y-4">
+          <div className="rounded-2xl border border-border bg-muted/30 p-4">
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">Current username</p>
+            <p className="mt-1 text-sm font-semibold text-primary">{adminProfile?.username || profileForm.username || "-"}</p>
+          </div>
+
+          <div>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">New username</label>
+            <input
+              type="text"
+              value={profileForm.username}
+              onChange={(e) => setProfileForm((prev) => ({ ...prev, username: e.target.value }))}
+              className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+
+          <div className="grid gap-3">
+            <div>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">Current password</label>
+              <input
+                type="password"
+                value={profileForm.currentPassword}
+                onChange={(e) => setProfileForm((prev) => ({ ...prev, currentPassword: e.target.value }))}
+                className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">New password</label>
+              <input
+                type="password"
+                value={profileForm.newPassword}
+                onChange={(e) => setProfileForm((prev) => ({ ...prev, newPassword: e.target.value }))}
+                className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">Confirm new password</label>
+              <input
+                type="password"
+                value={profileForm.confirmPassword}
+                onChange={(e) => setProfileForm((prev) => ({ ...prev, confirmPassword: e.target.value }))}
+                className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+              />
+            </div>
+          </div>
+
+          {profileError && (
+            <p className="rounded-xl bg-destructive/10 px-3 py-2 text-sm text-destructive">{profileError}</p>
+          )}
+          {profileSuccess && (
+            <p className="rounded-xl bg-primary/10 px-3 py-2 text-sm text-primary">{profileSuccess}</p>
+          )}
+
+          <div className="flex gap-3 pt-2">
+            <button
+              onClick={() => setProfileOpen(false)}
+              className="flex-1 rounded-xl border border-border py-2.5 text-sm font-medium transition-colors hover:bg-muted"
+            >
+              {t('admin.cancel')}
+            </button>
+            <button
+              onClick={saveProfile}
+              disabled={profileLoading}
+              className="flex-1 rounded-xl bg-primary py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
+            >
+              {profileLoading ? t('admin.saving') : t('admin.save')}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
